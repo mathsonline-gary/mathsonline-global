@@ -1,0 +1,11 @@
+description: |
+  An unhandled exception. The message is `Server Error` unless the exception was an HTTP
+  exception carrying its own message.
+content:
+  application/json:
+    schema:
+      $ref: '../schemas/Error.yaml'
+    examples:
+      default:
+        value:
+          message: Server Error

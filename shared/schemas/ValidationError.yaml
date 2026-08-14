@@ -1,0 +1,17 @@
+type: object
+description: |
+  Laravel's validation envelope, rendered from `ValidationException` at 422. Every failing field
+  maps to its list of messages; nested and array fields use dot notation
+  (`items.0.quantity`).
+required: [message, errors]
+properties:
+  message:
+    type: string
+    description: The first failure message, repeated as a summary.
+  errors:
+    type: object
+    additionalProperties:
+      type: array
+      items:
+        type: string
+      minItems: 1

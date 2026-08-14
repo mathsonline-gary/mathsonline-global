@@ -1,0 +1,17 @@
+type: object
+description: |
+  One entry of `meta.links`, the page-by-page list Laravel builds for rendering pagination
+  controls. The first and last entries are the previous/next links and carry translated labels;
+  gaps in long page ranges appear as an entry with a `...` label and a null URL.
+required: [url, label, active]
+properties:
+  url:
+    type: [string, 'null']
+    format: uri
+  label:
+    type: string
+    examples: ['1']
+  page:
+    type: [integer, 'null']
+  active:
+    type: boolean

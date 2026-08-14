@@ -1,0 +1,52 @@
+openapi: 3.1.0
+
+info:
+  title: Membership API
+  version: '2.0.0'
+  description: |
+    HTTP API for the membership application, version 2.
+
+    No endpoints are described yet — this version currently carries only the framework-level
+    schemas and responses that every future path item will reference. Resource directories
+    (`orders/`, `promotions/`, …) are added alongside the routes they document; see ../README.md.
+
+servers:
+  - url: https://{host}/api/v2
+    description: Brand host
+    variables:
+      host:
+        default: www.mathsonline.com.au
+        description: Any brand domain served by this application.
+
+paths: {}
+
+# Framework-level components only. Anything resource-specific belongs in that resource's
+# directory, and `securitySchemes` is deliberately absent until v2's auth is decided.
+components:
+  responses:
+    Unauthenticated:
+      $ref: './shared/responses/Unauthenticated.yaml'
+    Forbidden:
+      $ref: './shared/responses/Forbidden.yaml'
+    NotFound:
+      $ref: './shared/responses/NotFound.yaml'
+    MethodNotAllowed:
+      $ref: './shared/responses/MethodNotAllowed.yaml'
+    ValidationError:
+      $ref: './shared/responses/ValidationError.yaml'
+    TooManyRequests:
+      $ref: './shared/responses/TooManyRequests.yaml'
+    ServerError:
+      $ref: './shared/responses/ServerError.yaml'
+
+  schemas:
+    Error:
+      $ref: './shared/schemas/Error.yaml'
+    ValidationError:
+      $ref: './shared/schemas/ValidationError.yaml'
+    PaginationLinks:
+      $ref: './shared/schemas/PaginationLinks.yaml'
+    PaginationMeta:
+      $ref: './shared/schemas/PaginationMeta.yaml'
+    PaginationLink:
+      $ref: './shared/schemas/PaginationLink.yaml'

@@ -1,0 +1,26 @@
+description: |
+  The rate limiter rejected the request (`ThrottleRequests`). `Retry-After` and `X-RateLimit-Reset`
+  are only present once the limit has actually been hit.
+headers:
+  Retry-After:
+    description: Seconds until the limit resets.
+    schema:
+      type: integer
+  X-RateLimit-Limit:
+    schema:
+      type: integer
+  X-RateLimit-Remaining:
+    schema:
+      type: integer
+  X-RateLimit-Reset:
+    description: Unix timestamp at which the limit resets.
+    schema:
+      type: integer
+content:
+  application/json:
+    schema:
+      $ref: '../schemas/Error.yaml'
+    examples:
+      default:
+        value:
+          message: Too Many Attempts.
