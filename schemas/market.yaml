@@ -1,0 +1,76 @@
+Market:
+  type: object
+  description: |
+    Storefront configuration for one market: display copy, currency, contact points, and the
+    publishable third-party keys a client initialises with.
+  required:
+    [code, name, currency, marketing_website, info_email, feedback_email]
+  properties:
+    code:
+      $ref: "./market.yaml#/MarketCode"
+    name:
+      type: string
+      description: Human-readable market name, for display only. Branch on `code`, not on this.
+      examples: ["Australia"]
+    currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+      description: The market's default currency, ISO 4217 alpha-3, upper-case.
+      examples: ["AUD"]
+    marketing_website:
+      type: string
+      format: uri
+      examples: ["https://www.mathsonline.co/au"]
+    info_email:
+      type: string
+      format: email
+      examples: ["info@mathsonline.com.au"]
+    feedback_email:
+      type: string
+      format: email
+      examples: ["feedback@mathsonline.com.au"]
+    support_phone:
+      type: [string, "null"]
+      examples: ["123-456-7890"]
+    social_facebook:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.facebook.com/mathsonline"]
+    social_instagram:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.instagram.com/mathsonline"]
+    stripe:
+      type: object
+      description: |
+        Publishable Stripe configuration. Absent when the market has no Stripe account configured.
+      properties:
+        publishable_key:
+          type: string
+          examples: ["pk_live_51H0000000000000000000000"]
+    google:
+      type: object
+      description: |
+        Publishable Google keys. Absent when none are configured; an individual key is absent when
+        that integration is not set up for the market.
+      properties:
+        recaptcha_site_key:
+          type: string
+          description: reCAPTCHA site key, required to submit protected forms.
+          examples: ["6LcEXAMPLEEXAMPLEEXAMPLEEXAMPLEEXAMPLEXX"]
+        maps_api_key:
+          type: string
+          description: Maps JavaScript API key, used for address autocompletion.
+          examples: ["AIzaSyEXAMPLE-EXAMPLE-EXAMPLE-EXAMPLE1234"]
+        tag_manager_container_id:
+          type: string
+          examples: ["GTM-XXXXXXX"]
+
+MarketCode:
+  type: string
+  description: |
+    Identifies a market. A lower-case slug, not an ISO country code — `uk` is not ISO 3166-1
+    alpha-2 (`GB` is). Validate against this enum, never against an ISO country list.
+  enum: [au, us, uk]
+  examples: ["au"]

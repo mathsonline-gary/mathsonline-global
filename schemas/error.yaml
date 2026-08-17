@@ -1,0 +1,37 @@
+Error:
+  type: object
+  description: |
+    Laravel's error envelope, rendered by `Handler::convertExceptionToArray` for any exception on a
+    JSON request. `message` is the HTTP exception's message, or the literal `Server Error` for
+    non-HTTP exceptions. With `APP_DEBUG=true` the payload also carries `exception`, `file`, `line`
+    and `trace` — never in production.
+  required: [message]
+  properties:
+    message:
+      type: string
+      examples: ['Server Error']
+
+ValidationError:
+  type: object
+  description: |
+    Laravel's validation envelope, rendered from `ValidationException` at 422. Every failing field
+    maps to its list of messages; nested and array fields use dot notation
+    (`items.0.quantity`).
+  required: [message, errors]
+  properties:
+    message:
+      type: string
+      description: The first failure message, repeated as a summary.
+      examples: ['The email field is required.']
+    errors:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: string
+        minItems: 1
+      examples:
+        - email:
+            - The email field is required.
+          items.0.quantity:
+            - The items.0.quantity field must be at least 1.
