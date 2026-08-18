@@ -11,21 +11,21 @@ A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/
 ## Layout
 
 ```
-api/            # the OpenAPI 3.1 description of /api/v2 — @workspace/api-contracts
-apps/www/       # Next.js front end
-packages/ui/    # shared components — @workspace/ui
+packages/openapi-v2/   # the OpenAPI 3.1 description of /api/v2 — @workspace/openapi-v2
+packages/ui/           # shared components — @workspace/ui
 packages/typescript-config/, packages/eslint-config/
+apps/www/              # Next.js front end
 ```
 
-The description sits at the repository root rather than under `packages/` because it is a language-neutral artifact: the front ends consume generated TypeScript, and the back end will read the bundled YAML off disk. It carries no version segment — this repository serves exactly one API version.
+The description is a workspace package like any other, so it lives under `packages/` and Turborepo picks it up from the `packages/*` glob. The name carries the version because the directory that will hold the Laravel back end is `apps/api` — one thing called `api` per repository.
 
 ## The description leads the implementation
 
-**The description is written first, and the implementation follows it.** A route, controller or FormRequest is only complete once it matches `api/`. The description is hand-maintained, never generated from code.
+**The description is written first, and the implementation follows it.** A route, controller or FormRequest is only complete once it matches the description. The description is hand-maintained, never generated from code.
 
-- `api/dist/` (bundle, generated types, HTML docs) is generated and gitignored. Never edit or commit it.
+- `packages/openapi-v2/dist/` (bundle, generated types, HTML docs) is generated and gitignored. Never edit or commit it.
 - Only the shared API client should import the generated types directly, so a breaking description change produces one compile error rather than one per call site.
-- `api/README.md` is the authority on the description's layout and conventions. Read it before adding a path or component.
+- `packages/openapi-v2/README.md` is the authority on the description's layout and conventions. Read it before adding a path or component.
 
 ## Commands
 
@@ -38,7 +38,7 @@ pnpm dev                        # every app's dev server
 pnpm format                     # prettier
 ```
 
-Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/api-contracts`.
+Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/openapi-v2`.
 
 A Laravel back end and the `student`, `teacher` and `parent` front ends are planned but not present yet. There is no test suite and no CI workflow in the repository — add the commands here when they land.
 
@@ -46,4 +46,4 @@ A Laravel back end and the `student`, `teacher` and `parent` front ends are plan
 
 - Default branch is `main`.
 - The initial work happened on a branch named `init`.
-- The v2 description was migrated from `membership` with `git subtree`, so its history predates this repository. Use `git log --follow` on files under `api/`.
+- The v2 description was migrated from `membership` with `git subtree`, so its history predates this repository. Use `git log --follow` on files under `packages/openapi-v2/`.

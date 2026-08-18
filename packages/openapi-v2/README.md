@@ -7,16 +7,17 @@ history intact; that repository keeps `api/v1/` and shares nothing with this des
 Nothing here is implemented yet — the back end has no `/api/v2` group. **The description is written
 first, and the implementation follows it.**
 
-This directory is a workspace package, `@workspace/api-contracts`. Consumers depend on it rather
-than reaching for these files by path: the front ends import the generated types, and the back end
-reads `dist/openapi.yaml` off disk.
+This directory is a workspace package, `@workspace/openapi-v2`. Consumers depend on it rather than
+reaching for these files by path: the front ends import the generated types, and the back end reads
+`dist/openapi.yaml` off disk. The name carries the version so that it never competes with `apps/api`,
+the Laravel application that will serve this description.
 
 ## Layout
 
 ```
-api/
+packages/openapi-v2/
 ├── README.md
-├── package.json           # @workspace/api-contracts
+├── package.json           # @workspace/openapi-v2
 ├── redocly.yaml           # single `apis` entry: main
 ├── openapi.yaml           # root description — index of every path and component
 ├── paths/
@@ -38,8 +39,8 @@ api/
 From the repository root, through the task graph:
 
 ```bash
-pnpm turbo run lint --filter=@workspace/api-contracts   # validate the description
-pnpm turbo run build --filter=@workspace/api-contracts  # bundle + types + docs → dist/
+pnpm turbo run lint --filter=@workspace/openapi-v2   # validate the description
+pnpm turbo run build --filter=@workspace/openapi-v2  # bundle + types + docs → dist/
 ```
 
 Or directly, from this directory:
