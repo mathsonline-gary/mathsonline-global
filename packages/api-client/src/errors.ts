@@ -1,4 +1,4 @@
-import type { components } from "../../dist/types";
+import type { components } from "@workspace/openapi-v2/types";
 
 type ErrorBody = components["schemas"]["Error"];
 type ValidationErrorBody = components["schemas"]["ValidationError"];

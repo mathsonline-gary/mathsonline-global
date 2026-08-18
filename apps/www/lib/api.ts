@@ -1,5 +1,5 @@
-import { createApiClient, unwrap } from "@workspace/openapi-v2/client";
-import type { components } from "@workspace/openapi-v2/client";
+import { createApiClient, unwrap } from "@workspace/api-client";
+import type { components } from "@workspace/api-client";
 
 export type Market = components["schemas"]["Market"];
 export type MarketCode = components["schemas"]["MarketCode"];

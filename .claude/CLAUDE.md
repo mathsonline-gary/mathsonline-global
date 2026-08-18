@@ -12,6 +12,7 @@ A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/
 
 ```
 packages/openapi-v2/   # the OpenAPI 3.1 description of /api/v2 — @workspace/openapi-v2
+packages/api-client/   # typed HTTP client over it — @workspace/api-client
 packages/ui/           # shared components — @workspace/ui
 packages/typescript-config/, packages/eslint-config/
 apps/www/              # Next.js front end
@@ -24,9 +25,10 @@ The description is a workspace package like any other, so it lives under `packag
 **The description is written first, and the implementation follows it.** A route, controller or FormRequest is only complete once it matches the description. The description is hand-maintained, never generated from code.
 
 - `packages/openapi-v2/dist/` (bundle, generated types, HTML docs) is generated and gitignored. Never edit or commit it.
-- The typed client lives in the same package, at `packages/openapi-v2/src/client/`, exported as `@workspace/openapi-v2/client`. It is the only place that imports the generated types, so a breaking description change produces one compile error rather than one per call site.
+- `@workspace/api-client` is the only place that imports the generated types, so a breaking description change produces one compile error rather than one per call site. Apps import the client, never `@workspace/openapi-v2/types` directly.
+- The description package holds the description and its generated output only. Type generation belongs there because a package builds from its dependency's output, not its source.
 - `createApiClient` is a factory and must stay one. A module-level client on the server carries one request's credentials into the next request; build a client per request.
-- `packages/openapi-v2/README.md` is the authority on the description's layout and conventions. Read it before adding a path or component.
+- `packages/openapi-v2/README.md` is the authority on the description's layout and conventions. Read it before adding a path or component; `packages/api-client/README.md` covers the client.
 
 ## Commands
 

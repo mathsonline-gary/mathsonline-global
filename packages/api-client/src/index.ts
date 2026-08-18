@@ -1,10 +1,10 @@
 import createClient, { type Client, type Middleware } from "openapi-fetch";
 
-import type { paths } from "../../dist/types";
+import type { paths } from "@workspace/openapi-v2/types";
 import { ApiError } from "./errors";
 
 export { ApiError } from "./errors";
-export type { paths, components } from "../../dist/types";
+export type { paths, components } from "@workspace/openapi-v2/types";
 
 export type ApiClient = Client<paths>;
 

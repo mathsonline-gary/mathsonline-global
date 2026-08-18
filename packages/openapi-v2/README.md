@@ -7,40 +7,28 @@ history intact; that repository keeps `api/v1/` and shares nothing with this des
 Nothing here is implemented yet — the back end has no `/api/v2` group. **The description is written
 first, and the implementation follows it.**
 
-This directory is a workspace package, `@workspace/openapi-v2`. Consumers depend on it rather than
-reaching for these files by path: the front ends import the client and the generated types, and the
-back end reads `dist/openapi.yaml` off disk. The name carries the version so that it never competes
-with `apps/api`, the Laravel application that will serve this description.
+This directory is a workspace package, `@workspace/openapi-v2`, and it holds the description and
+nothing else: no runtime dependency, no application code. Consumers depend on it rather than
+reaching for these files by path — the back end reads `dist/openapi.yaml` off disk, and
+[`@workspace/api-client`](../api-client/README.md) imports `@workspace/openapi-v2/types`. The name
+carries the version so that it never competes with `apps/api`, the Laravel application that will
+serve this description.
 
-## The client
+## Generated output
 
-`src/client/` holds the typed client the front ends use — `openapi-fetch` configured with the
-generated `paths`, so a request path, parameter or response field that does not exist fails to
-compile.
+`build` produces three things in `dist/`, all from the same source and none of them committed:
 
-```ts
-import { createApiClient, unwrap, ApiError } from "@workspace/openapi-v2/client";
+| File | Consumer |
+| --- | --- |
+| `openapi.yaml` | the bundle — what the back end reads off disk |
+| `types.ts` | `@workspace/api-client`, the only importer |
+| `index.html` | human-readable docs |
 
-const api = createApiClient({ baseUrl: process.env.API_URL!, token: () => session?.accessToken });
-const { data } = await api.GET("/markets/{marketCode}", { params: { path: { marketCode: "au" } } });
-```
-
-- **`createApiClient` is a factory, and call sites must keep it one.** A module-level client on the
-  server carries one request's credentials into the next request — a cross-user token leak. Build a
-  client per request; `token` is a callback for the same reason.
-- **`unwrap` turns `{data, error}` into the payload or an `ApiError`.** `openapi-fetch` throws only
-  on transport failure, which suits call sites that branch on the error and not the ones that just
-  want the payload. `ApiError` normalises what the description guarantees: `status`,
-  `validationErrors` for 422, `retryAfterSeconds` for 429.
-- **The `{data: …}` envelope is not unwrapped here.** It is part of the response schema, so it stays
-  visible in the types; the app's own data layer strips it.
-- **This is where the description's types are imported.** Keep it that way: a breaking description
-  change should surface as one compile error here, not one per call site.
-
-The client lives in this package rather than its own because there is nothing to generate — it is
-`openapi-fetch` plus configuration. The seam that matters is the import path: everything imports
-from `@workspace/openapi-v2/client`, so splitting the client into its own package later changes one
-specifier and no call sites.
+The bundle and the types are two projections of one description: same input, no options to choose,
+no policy. That is why generation lives here rather than in the client — a package should build from
+its dependency's *output*, and generating the types in the client would mean reaching back into this
+package's source YAML instead. It also keeps the types available to consumers that want no HTTP
+runtime at all: mock handlers, contract-test scripts, fixture generators.
 
 ## Layout
 
@@ -50,7 +38,6 @@ packages/openapi-v2/
 ├── package.json           # @workspace/openapi-v2
 ├── redocly.yaml           # single `apis` entry: main
 ├── turbo.json             # carries "build before dependents type-check" to the graph
-├── src/client/            # openapi-fetch client — index.ts, errors.ts
 ├── openapi.yaml           # root description — index of every path and component
 ├── paths/
 │   └── markets.yaml       # every path item under /markets
@@ -78,9 +65,8 @@ pnpm turbo run build --filter=@workspace/openapi-v2  # bundle + types + docs →
 Or directly, from this directory:
 
 ```bash
-pnpm lint          # redocly lint, then eslint over src/
-pnpm build         # bundle, HTML docs, then generate dist/types.ts
-pnpm check-types   # tsc over the client against the generated types
+pnpm lint    # redocly lint
+pnpm build   # bundle, HTML docs, then generate dist/types.ts
 ```
 
 Both must pass before a description change is done. `lint` catches invalid schemas; the bundle step

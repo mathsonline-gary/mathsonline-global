@@ -7,10 +7,6 @@
     // every upstream build.
     "transit": {
       "dependsOn": ["^transit", "build"]
-    },
-    "check-types": {
-      "dependsOn": ["build"],
-      "outputs": ["tsconfig.tsbuildinfo"]
     }
   }
 }
