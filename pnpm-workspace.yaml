@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+strictPeerDependencies: false
+
+allowBuilds:
+  unrs-resolver: true
