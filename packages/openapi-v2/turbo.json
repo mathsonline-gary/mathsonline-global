@@ -1,0 +1,16 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    // Dependents type-check against `dist/types.ts`, which only exists after this package's build.
+    // The transit node is what carries that ordering to them without every task depending on
+    // every upstream build.
+    "transit": {
+      "dependsOn": ["^transit", "build"]
+    },
+    "check-types": {
+      "dependsOn": ["build"],
+      "outputs": ["tsconfig.tsbuildinfo"]
+    }
+  }
+}

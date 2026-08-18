@@ -24,7 +24,8 @@ The description is a workspace package like any other, so it lives under `packag
 **The description is written first, and the implementation follows it.** A route, controller or FormRequest is only complete once it matches the description. The description is hand-maintained, never generated from code.
 
 - `packages/openapi-v2/dist/` (bundle, generated types, HTML docs) is generated and gitignored. Never edit or commit it.
-- Only the shared API client should import the generated types directly, so a breaking description change produces one compile error rather than one per call site.
+- The typed client lives in the same package, at `packages/openapi-v2/src/client/`, exported as `@workspace/openapi-v2/client`. It is the only place that imports the generated types, so a breaking description change produces one compile error rather than one per call site.
+- `createApiClient` is a factory and must stay one. A module-level client on the server carries one request's credentials into the next request; build a client per request.
 - `packages/openapi-v2/README.md` is the authority on the description's layout and conventions. Read it before adding a path or component.
 
 ## Commands

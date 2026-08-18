@@ -6,14 +6,23 @@
   "type": "module",
   "exports": {
     "./openapi.yaml": "./dist/openapi.yaml",
-    "./types": "./dist/types.ts"
+    "./types": "./dist/types.ts",
+    "./client": "./src/client/index.ts"
   },
   "scripts": {
     "build": "redocly bundle main && redocly build-docs main --output dist/index.html && openapi-typescript",
-    "lint": "redocly lint"
+    "lint": "redocly lint && eslint",
+    "check-types": "tsc --noEmit"
   },
   "devDependencies": {
     "@redocly/cli": "^2.5.0",
-    "openapi-typescript": "^7.10.1"
+    "@workspace/eslint-config": "workspace:*",
+    "@workspace/typescript-config": "workspace:*",
+    "eslint": "^9",
+    "openapi-typescript": "^7.10.1",
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0"
   }
 }

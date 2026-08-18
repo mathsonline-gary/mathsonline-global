@@ -1,0 +1,12 @@
+{
+  "extends": "@workspace/typescript-config/base.json",
+  "compilerOptions": {
+    // `Request`, `Response` and `Headers`: the client runs in both runtimes, so DOM types rather
+    // than Node's.
+    "lib": ["ES2022", "DOM"],
+    "noEmit": true,
+    "incremental": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

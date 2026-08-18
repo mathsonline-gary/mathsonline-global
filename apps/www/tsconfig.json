@@ -3,7 +3,9 @@
   "compilerOptions": {
     "paths": {
       "@/*": ["./*"],
-      "@workspace/ui/*": ["../../packages/ui/src/*"]
+      "@workspace/ui/*": ["../../packages/ui/src/*"],
+      "@workspace/openapi-v2/client": ["../../packages/openapi-v2/src/client/index.ts"],
+      "@workspace/openapi-v2/types": ["../../packages/openapi-v2/dist/types.ts"]
     }
   },
   "include": [
