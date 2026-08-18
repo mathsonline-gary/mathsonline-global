@@ -1,0 +1,58 @@
+openapi: 3.1.0
+
+info:
+  title: Membership API
+  version: "2.0.0"
+  description: |
+    HTTP API for the membership application, version 2.
+
+servers:
+  - url: https://{host}/api/v2
+    description: Application host
+    variables:
+      host:
+        default: www.mathsonline.co
+        description: Any domain served by this application.
+
+tags:
+  - name: Markets
+    description: Storefront configuration per market, addressed by market code.
+
+# One file per resource; the pointer after `#` is the path string with `/` escaped as `~1`, so the
+# key above each `$ref` and the pointer inside it spell the same URL.
+paths:
+  /markets/{marketCode}:
+    $ref: "./paths/markets.yaml#/~1markets~1{marketCode}"
+
+components:
+  responses:
+    Unauthenticated:
+      $ref: "./responses/errors.yaml#/Unauthenticated"
+    Forbidden:
+      $ref: "./responses/errors.yaml#/Forbidden"
+    NotFound:
+      $ref: "./responses/errors.yaml#/NotFound"
+    MethodNotAllowed:
+      $ref: "./responses/errors.yaml#/MethodNotAllowed"
+    ValidationError:
+      $ref: "./responses/errors.yaml#/ValidationError"
+    TooManyRequests:
+      $ref: "./responses/errors.yaml#/TooManyRequests"
+    ServerError:
+      $ref: "./responses/errors.yaml#/ServerError"
+
+  schemas:
+    Error:
+      $ref: "./schemas/error.yaml#/Error"
+    ValidationError:
+      $ref: "./schemas/error.yaml#/ValidationError"
+    PaginationLinks:
+      $ref: "./schemas/pagination.yaml#/PaginationLinks"
+    PaginationMeta:
+      $ref: "./schemas/pagination.yaml#/PaginationMeta"
+    PaginationLink:
+      $ref: "./schemas/pagination.yaml#/PaginationLink"
+    Market:
+      $ref: "./schemas/market.yaml#/Market"
+    MarketCode:
+      $ref: "./schemas/market.yaml#/MarketCode"
