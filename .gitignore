@@ -279,3 +279,6 @@ $RECYCLE.BIN/
 
 # Turborepo
 .turbo
+
+# API contract bundle and generated types
+/api/dist

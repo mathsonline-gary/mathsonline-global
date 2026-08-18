@@ -1,0 +1,20 @@
+# This repository serves exactly one API version, so there is a single `apis` entry. `redocly lint`
+# and `redocly bundle` with no positional argument operate on it; `build-docs` needs the name.
+apis:
+  main:
+    root: ./openapi.yaml
+    output: ./dist/openapi.yaml
+    # openapi-typescript reads this config too, and requires the output path here rather than on the
+    # command line.
+    x-openapi-ts:
+      output: ./dist/types.ts
+
+extends:
+  - recommended
+
+rules:
+  # Shared components are added before the endpoints that reference them, while the description is
+  # still being filled in.
+  no-unused-components: off
+  # Internal API, not published under a licence.
+  info-license: off

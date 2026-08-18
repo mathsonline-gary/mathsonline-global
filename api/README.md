@@ -1,16 +1,23 @@
-# API contracts — v2
+# API contracts
 
-Everything describing `/api/v2`. Self-contained: v2 shares nothing with v1 except
-[`redocly.yaml`](../redocly.yaml), including its layout, which deliberately differs from v1's.
+Everything describing `/api/v2`, the only API version this repository serves — which is why no path
+here carries a version segment. It was migrated out of `mathsonline/membership` (`api/v2/`) with its
+history intact; that repository keeps `api/v1/` and shares nothing with this description.
 
-Nothing here is implemented yet — `routes/api.php` has no `/api/v2` group. The description is
-written first, and the Laravel side follows it.
+Nothing here is implemented yet — the back end has no `/api/v2` group. **The description is written
+first, and the implementation follows it.**
+
+This directory is a workspace package, `@workspace/api-contracts`. Consumers depend on it rather
+than reaching for these files by path: the front ends import the generated types, and the back end
+reads `dist/openapi.yaml` off disk.
 
 ## Layout
 
 ```
-v2/
+api/
 ├── README.md
+├── package.json           # @workspace/api-contracts
+├── redocly.yaml           # single `apis` entry: main
 ├── openapi.yaml           # root description — index of every path and component
 ├── paths/
 │   └── markets.yaml       # every path item under /markets
@@ -20,17 +27,31 @@ v2/
 │   └── pagination.yaml    # PaginationLinks, PaginationMeta, PaginationLink
 ├── responses/
 │   └── errors.yaml        # 401, 403, 404, 405, 422, 429, 500
-└── dist/                  # bundle + docs (gitignored, never edited)
-    ├── openapi.yaml
-    └── index.html
+└── dist/                  # generated, gitignored, never edited
+    ├── openapi.yaml       # bundle — what the back end reads
+    ├── types.ts           # TypeScript types — what the API client imports
+    └── index.html         # HTML docs
 ```
 
 ## Commands
 
+From the repository root, through the task graph:
+
 ```bash
-npm run api:lint      # validate every version
-npm run api:build:v2  # bundle + docs → v2/dist/
+pnpm turbo run lint --filter=@workspace/api-contracts   # validate the description
+pnpm turbo run build --filter=@workspace/api-contracts  # bundle + types + docs → dist/
 ```
+
+Or directly, from this directory:
+
+```bash
+pnpm lint    # redocly lint
+pnpm build   # bundle, HTML docs, then generate dist/types.ts from the bundle
+```
+
+Both must pass before a description change is done. `lint` catches invalid schemas; the bundle step
+in `build` is what catches a `$ref` that escapes its file or points at a pointer that does not
+exist, which linting does not always report.
 
 ## Conventions
 
@@ -49,12 +70,13 @@ npm run api:build:v2  # bundle + docs → v2/dist/
   its `parameters`, which is why the keys are path strings and not Laravel-ish labels (`show`,
   `index`) — those name operations, and would be a lie the moment a second method appears on the
   same URL. The Laravel verb lives in `operationId` (`showMarket`), where it cannot drift.
-- **The description is hand-maintained.** A route or FormRequest change is only complete once the
-  description matches it.
+- **The description is hand-maintained**, not generated from the code. Because it leads the
+  implementation, a route or FormRequest is only complete once it matches the description — and
+  `dist/` is generated, so it is never edited or committed.
 
 ## Framework responses and schemas
 
-Transcribed from the installed Laravel, not from memory — `meta.links[]` carries a `page` key in
+Transcribed from a running Laravel, not from memory — `meta.links[]` carries a `page` key in
 Laravel 11+, for instance, which older references omit. Re-check on a major upgrade.
 
 | Component | Where it comes from |

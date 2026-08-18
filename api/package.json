@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/package.json",
+  "name": "@workspace/api-contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./openapi.yaml": "./dist/openapi.yaml",
+    "./types": "./dist/types.ts"
+  },
+  "scripts": {
+    "build": "redocly bundle main && redocly build-docs main --output dist/index.html && openapi-typescript",
+    "lint": "redocly lint"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^2.5.0",
+    "openapi-typescript": "^7.10.1"
+  }
+}

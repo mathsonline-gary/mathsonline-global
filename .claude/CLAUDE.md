@@ -2,34 +2,48 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Status
+## What this repository is
 
-This repository is a scaffold. As of the initial commit it contains only `README.md`, `.gitignore`, and this file — no application code, dependency manifests, or tests yet.
+A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/v2`, the applications that implement and consume it, and one task graph covering all of them.
 
-Until code lands, treat everything below as intent rather than fact, and verify against the working tree before relying on it. When the first application code is committed, replace the placeholder sections with the real commands and architecture.
+`mathsonline/membership` is a separate repository that keeps serving `/api/v1`. The two versions share nothing: `membership` owns `api/v1/`, this repository owns the v2 description. Do not look for v2 files there, and do not add v1 files here.
 
-## Intended stack
+## Layout
 
-`.gitignore` was generated from the toptal template for `nextjs` and `laravel` (alongside OS and editor entries for macOS, Linux, Windows, JetBrains IDEs, VS Code, and Sublime Text). That implies the planned shape of the project:
+```
+api/            # the OpenAPI 3.1 description of /api/v2 — @workspace/api-contracts
+apps/www/       # Next.js front end
+packages/ui/    # shared components — @workspace/ui
+packages/typescript-config/, packages/eslint-config/
+```
 
-- A Laravel (PHP) backend, likely providing an HTTP/JSON API.
-- A Next.js (React/TypeScript) frontend.
+The description sits at the repository root rather than under `packages/` because it is a language-neutral artifact: the front ends consume generated TypeScript, and the back end will read the bundled YAML off disk. It carries no version segment — this repository serves exactly one API version.
 
-The two may end up in one repository (monorepo, e.g. `api/` plus `web/`) or the template may simply be broad. Confirm the actual layout before assuming either.
+## The description leads the implementation
+
+**The description is written first, and the implementation follows it.** A route, controller or FormRequest is only complete once it matches `api/`. The description is hand-maintained, never generated from code.
+
+- `api/dist/` (bundle, generated types, HTML docs) is generated and gitignored. Never edit or commit it.
+- Only the shared API client should import the generated types directly, so a breaking description change produces one compile error rather than one per call site.
+- `api/README.md` is the authority on the description's layout and conventions. Read it before adding a path or component.
 
 ## Commands
 
-Not yet established — there is no `composer.json`, `package.json`, `Makefile`, or CI config in the repository.
+Run everything through the task graph from the repository root; that is also what CI runs.
 
-When the stack is scaffolded, document here:
+```bash
+pnpm install                    # bootstrap; pnpm workspaces, Node >= 22
+pnpm turbo run lint check-types build
+pnpm dev                        # every app's dev server
+pnpm format                     # prettier
+```
 
-- Install and bootstrap (dependencies, `.env` setup, database migration/seed).
-- Local development servers for backend and frontend.
-- Build and production compile.
-- Lint and format, including whether formatting is enforced in CI.
-- Test suite, and specifically how to run a **single** test file or test case.
+Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/api-contracts`.
+
+A Laravel back end and the `student`, `teacher` and `parent` front ends are planned but not present yet. There is no test suite and no CI workflow in the repository — add the commands here when they land.
 
 ## Git conventions
 
 - Default branch is `main`.
 - The initial work happened on a branch named `init`.
+- The v2 description was migrated from `membership` with `git subtree`, so its history predates this repository. Use `git log --follow` on files under `api/`.
