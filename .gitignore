@@ -282,3 +282,6 @@ $RECYCLE.BIN/
 
 # API contract bundle and generated types
 /packages/openapi-v2/dist
+
+# pnpm keeps its store inside the repo when the project and $HOME are on different filesystems
+.pnpm-store
