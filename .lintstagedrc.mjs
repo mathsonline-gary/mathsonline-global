@@ -17,10 +17,13 @@ export default {
     //   - Type errors are cross-file. Checking only the staged paths would miss the case this
     //     repository exists to catch — a schema change that breaks a front end that was not
     //     touched.
+    //   - The same goes for `test`: a test lives beside the module it covers, but what breaks it
+    //     is usually a change somewhere else. Running only the tests next to the staged files
+    //     would check the one package least likely to be at fault.
     //
     // Cheap despite being whole-graph, because turbo only re-runs the packages the change
     // actually affects and restores the rest from cache. It also runs inside lint-staged's stash,
     // so it sees exactly the tree being committed rather than the working tree.
-    () => "pnpm turbo run lint check-types",
+    () => "pnpm turbo run lint check-types test",
   ],
 };

@@ -11,6 +11,7 @@
     "mock": "turbo run mock",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
+    "test": "turbo run test",
     "format": "prettier --write . --cache",
     "format:check": "prettier --check . --cache",
     "prepare": "husky"

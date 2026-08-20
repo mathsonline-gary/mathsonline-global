@@ -17,6 +17,9 @@
     "check-types": {
       "dependsOn": ["transit"]
     },
+    "test": {
+      "dependsOn": ["transit"]
+    },
     "transit": {
       "dependsOn": ["^transit"]
     }

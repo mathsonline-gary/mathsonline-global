@@ -39,9 +39,10 @@ Run everything through the task graph from the repository root; that is also wha
 
 ```bash
 pnpm install                    # bootstrap; pnpm workspaces, Node >= 22
-pnpm turbo run lint check-types build
+pnpm turbo run lint check-types test build
 pnpm dev                        # every app's dev server
 pnpm mock                       # Prism mock server over the description, on :4010
+pnpm test                       # vitest, once, everywhere it is configured
 pnpm format                     # prettier
 ```
 
@@ -51,20 +52,40 @@ Prism mounts paths at the root. See `packages/openapi-v2/README.md`.
 
 Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/openapi-v2`.
 
-A Laravel back end and the `www`, `student`, `teacher` and `parent` front ends are planned but not present yet. `www` existed as a `create-next-app` scaffold and was removed until there is something for it to serve. There is no test suite and no CI workflow in the repository — add the commands here when they land.
+A Laravel back end and the `www`, `student`, `teacher` and `parent` front ends are planned but not present yet. `www` existed as a `create-next-app` scaffold and was removed until there is something for it to serve. There is no CI workflow in the repository — add the commands here when it lands.
+
+## Tests
+
+Vitest, in `@workspace/api-client` and `apps/purchase` — the two packages with runnable code.
+`@workspace/openapi-v2` has none: it is YAML, and `redocly lint` is what checks it.
+
+- A test sits beside the module it covers, as `<module>.test.ts`. There is no `__tests__/` or
+  `tests/` directory; a test that has to be found by path rather than by proximity is a test
+  nobody reads next to the code it describes.
+- `packages/api-client` needs no vitest config — its tests are plain Node. `apps/purchase` has
+  `vitest.config.mts` (jsdom, `@vitejs/plugin-react`, `resolve.tsconfigPaths` for the `@/*` alias)
+  and `vitest.setup.ts` (jest-dom matchers, and Testing Library's `cleanup` after each test).
+- Vitest does not type-check. `check-types` covers the test files too, because they are inside each
+  package's `tsconfig.json` `include`, so the two tasks are complementary rather than redundant.
+- Components are tested through the accessibility tree — `getByRole` over `getByTestId`. What a
+  screen reader cannot find, a test should not be able to find either.
+- `describe`/`it`/`expect` are imported from `vitest` rather than made global, so a test file
+  declares its own dependencies like any other module.
 
 ## Commits are gated by a pre-commit hook
 
 `husky` runs `lint-staged` on every commit, configured in `.lintstagedrc.mjs`. It does two things,
-in order: `prettier --write` over the staged files, then `pnpm turbo run lint check-types` over the
-whole graph.
+in order: `prettier --write` over the staged files, then `pnpm turbo run lint check-types test`
+over the whole graph.
 
 The second half is deliberately not scoped to the staged paths. `redocly lint` takes the
 description's entrypoint rather than individual files, and type errors are cross-file — a schema
 change breaks front ends nobody touched, which is the case this repository is arranged to catch.
-Whole-graph is affordable because turbo restores the unaffected packages from cache.
+Tests are the same story from the other side: a test lives beside its module, but what breaks it
+is usually a change elsewhere. Whole-graph is affordable because turbo restores the unaffected
+packages from cache.
 
-So a commit whose type-check or lint fails is refused, and prettier's fixes are re-staged into the
+So a commit whose lint, type-check or tests fail is refused, and prettier's fixes are re-staged into the
 commit rather than left behind. `git commit --no-verify` skips the hook; the reason to reach for it
 is a work-in-progress commit on a branch, not a red one on `main`. Nothing else runs the graph yet
 — there is no CI (issue #1).
