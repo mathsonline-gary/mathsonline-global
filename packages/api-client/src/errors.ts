@@ -36,12 +36,19 @@ export class ApiError extends Error {
   static from(response: Response, body: unknown): ApiError {
     const retryAfter = Number(response.headers.get("Retry-After"));
 
-    return new ApiError(messageOf(body) ?? `HTTP ${response.status} ${response.statusText}`.trim(), {
-      status: response.status,
-      body,
-      validationErrors: validationErrorsOf(body),
-      retryAfterSeconds: Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : undefined,
-    });
+    return new ApiError(
+      messageOf(body) ??
+        `HTTP ${response.status} ${response.statusText}`.trim(),
+      {
+        status: response.status,
+        body,
+        validationErrors: validationErrorsOf(body),
+        retryAfterSeconds:
+          Number.isFinite(retryAfter) && retryAfter > 0
+            ? retryAfter
+            : undefined,
+      },
+    );
   }
 
   /** 422 — the request was well-formed but the payload failed validation. */
@@ -72,17 +79,24 @@ function messageOf(body: unknown): string | undefined {
   if (!isRecord(body)) return undefined;
   const { message } = body as Partial<ErrorBody>;
 
-  return typeof message === "string" && message.length > 0 ? message : undefined;
+  return typeof message === "string" && message.length > 0
+    ? message
+    : undefined;
 }
 
-function validationErrorsOf(body: unknown): Record<string, string[]> | undefined {
+function validationErrorsOf(
+  body: unknown,
+): Record<string, string[]> | undefined {
   if (!isRecord(body)) return undefined;
   const { errors } = body as Partial<ValidationErrorBody>;
   if (!isRecord(errors)) return undefined;
 
   const normalised: Record<string, string[]> = {};
   for (const [field, messages] of Object.entries(errors)) {
-    if (Array.isArray(messages) && messages.every((m) => typeof m === "string")) {
+    if (
+      Array.isArray(messages) &&
+      messages.every((m) => typeof m === "string")
+    ) {
       normalised[field] = messages;
     }
   }

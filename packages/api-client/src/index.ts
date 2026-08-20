@@ -63,7 +63,9 @@ export function unwrap<T>(result: {
   error?: unknown;
   response: Response;
 }): T {
-  if (result.error !== undefined) throw ApiError.from(result.response, result.error);
+  if (result.error !== undefined) {
+    throw ApiError.from(result.response, result.error);
+  }
 
   if (result.data === undefined) {
     throw new ApiError(`HTTP ${result.response.status} carried no body.`, {

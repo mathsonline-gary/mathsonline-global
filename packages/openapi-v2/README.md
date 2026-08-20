@@ -18,15 +18,15 @@ serve this description.
 
 `build` produces three things in `dist/`, all from the same source and none of them committed:
 
-| File | Consumer |
-| --- | --- |
+| File           | Consumer                                      |
+| -------------- | --------------------------------------------- |
 | `openapi.yaml` | the bundle — what the back end reads off disk |
-| `types.ts` | `@workspace/api-client`, the only importer |
-| `index.html` | human-readable docs |
+| `types.ts`     | `@workspace/api-client`, the only importer    |
+| `index.html`   | human-readable docs                           |
 
 The bundle and the types are two projections of one description: same input, no options to choose,
 no policy. That is why generation lives here rather than in the client — a package should build from
-its dependency's *output*, and generating the types in the client would mean reaching back into this
+its dependency's _output_, and generating the types in the client would mean reaching back into this
 package's source YAML instead. It also keeps the types available to consumers that want no HTTP
 runtime at all: mock handlers, contract-test scripts, fixture generators.
 
@@ -75,14 +75,14 @@ exist, which linting does not always report.
 
 ## Conventions
 
-| Item | Rule | Example |
-| --- | --- | --- |
-| Path file | one per resource — the first path segment | `/markets/*` → `paths/markets.yaml` |
-| Path file keys | the full path strings, exactly as `paths` spells them | `/markets/{marketCode}:` |
-| Root `$ref` to a path item | JSON Pointer into that file, `/` escaped as `~1`, directly under the same URL written as the key | `'./paths/markets.yaml#/~1markets~1{marketCode}'` |
-| Component file, many components | lower-case resource or group name, components as top-level keys | `schemas/market.yaml` → `#/Market`, `#/MarketCode` |
-| Component file, one component | PascalCase, filename = component name | (none yet) |
-| Component directory | mirrors the OpenAPI key exactly | `responses/`, not `error-responses/` |
+| Item                            | Rule                                                                                             | Example                                            |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| Path file                       | one per resource — the first path segment                                                        | `/markets/*` → `paths/markets.yaml`                |
+| Path file keys                  | the full path strings, exactly as `paths` spells them                                            | `/markets/{marketCode}:`                           |
+| Root `$ref` to a path item      | JSON Pointer into that file, `/` escaped as `~1`, directly under the same URL written as the key | `'./paths/markets.yaml#/~1markets~1{marketCode}'`  |
+| Component file, many components | lower-case resource or group name, components as top-level keys                                  | `schemas/market.yaml` → `#/Market`, `#/MarketCode` |
+| Component file, one component   | PascalCase, filename = component name                                                            | (none yet)                                         |
+| Component directory             | mirrors the OpenAPI key exactly                                                                  | `responses/`, not `error-responses/`               |
 
 - **`openapi.yaml` registers every component**, not just the widely-used ones: one file that lists
   what exists and where it lives.
@@ -99,17 +99,17 @@ exist, which linting does not always report.
 Transcribed from a running Laravel, not from memory — `meta.links[]` carries a `page` key in
 Laravel 11+, for instance, which older references omit. Re-check on a major upgrade.
 
-| Component | Where it comes from |
-| --- | --- |
-| `responses/errors.yaml#/Unauthenticated` (401) | `AuthenticationException` → `Unauthenticated.` |
-| `responses/errors.yaml#/Forbidden` (403) | `AuthorizationException` → `This action is unauthorized.` |
-| `responses/errors.yaml#/NotFound` (404) | unmatched route, or route-model binding miss |
-| `responses/errors.yaml#/MethodNotAllowed` (405) | route matched, method didn't |
-| `responses/errors.yaml#/ValidationError` (422) | `ValidationException` → `{message, errors}` |
-| `responses/errors.yaml#/TooManyRequests` (429) | `ThrottleRequests` → `Too Many Attempts.`, `Retry-After` |
-| `responses/errors.yaml#/ServerError` (500) | any other exception → `Server Error` |
-| `schemas/error.yaml` | `Handler::convertExceptionToArray` |
-| `schemas/pagination.yaml` | `PaginatedResourceResponse` + `LengthAwarePaginator` |
+| Component                                       | Where it comes from                                       |
+| ----------------------------------------------- | --------------------------------------------------------- |
+| `responses/errors.yaml#/Unauthenticated` (401)  | `AuthenticationException` → `Unauthenticated.`            |
+| `responses/errors.yaml#/Forbidden` (403)        | `AuthorizationException` → `This action is unauthorized.` |
+| `responses/errors.yaml#/NotFound` (404)         | unmatched route, or route-model binding miss              |
+| `responses/errors.yaml#/MethodNotAllowed` (405) | route matched, method didn't                              |
+| `responses/errors.yaml#/ValidationError` (422)  | `ValidationException` → `{message, errors}`               |
+| `responses/errors.yaml#/TooManyRequests` (429)  | `ThrottleRequests` → `Too Many Attempts.`, `Retry-After`  |
+| `responses/errors.yaml#/ServerError` (500)      | any other exception → `Server Error`                      |
+| `schemas/error.yaml`                            | `Handler::convertExceptionToArray`                        |
+| `schemas/pagination.yaml`                       | `PaginatedResourceResponse` + `LengthAwarePaginator`      |
 
 Laravel emits these whether or not the description opts in, so they are facts about the API rather
 than design claims. A path item lists only the codes it actually distinguishes — `showMarket`
