@@ -1,11 +1,11 @@
 /**
- * The 404 for the whole app, including an unknown market slug — issue #4 rules
- * out GeoIP routing and redirect-guessing, so an unrecognised first path
- * segment lands here.
+ * The 404 for the whole app, including an unknown market code. There is no GeoIP
+ * routing and no redirect-guessing, so an unrecognised first path segment lands
+ * here.
  *
  * No market resolved means no market known, so this page carries no brand name,
- * no market chrome and no links into a flow. Copy is purchase-web's own
- * (issue #3: membership returns facts, purchase-web owns customer-facing copy).
+ * no market chrome and no links into a flow. The copy is this application's own:
+ * the API returns facts, and what the customer reads is decided here.
  */
 export default function NotFound() {
   return (
