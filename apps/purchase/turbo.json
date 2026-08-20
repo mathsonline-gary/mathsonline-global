@@ -1,6 +1,9 @@
 {
   "extends": ["//"],
   "tasks": {
+    "build": {
+      "env": ["API_URL"]
+    },
     "check-types": {
       "dependsOn": ["transit"],
       "outputs": ["tsconfig.tsbuildinfo", ".next/types/**"]
