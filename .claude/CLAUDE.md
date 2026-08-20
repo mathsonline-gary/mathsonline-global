@@ -53,6 +53,22 @@ Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@works
 
 A Laravel back end and the `www`, `student`, `teacher` and `parent` front ends are planned but not present yet. `www` existed as a `create-next-app` scaffold and was removed until there is something for it to serve. There is no test suite and no CI workflow in the repository — add the commands here when they land.
 
+## Commits are gated by a pre-commit hook
+
+`husky` runs `lint-staged` on every commit, configured in `.lintstagedrc.mjs`. It does two things,
+in order: `prettier --write` over the staged files, then `pnpm turbo run lint check-types` over the
+whole graph.
+
+The second half is deliberately not scoped to the staged paths. `redocly lint` takes the
+description's entrypoint rather than individual files, and type errors are cross-file — a schema
+change breaks front ends nobody touched, which is the case this repository is arranged to catch.
+Whole-graph is affordable because turbo restores the unaffected packages from cache.
+
+So a commit whose type-check or lint fails is refused, and prettier's fixes are re-staged into the
+commit rather than left behind. `git commit --no-verify` skips the hook; the reason to reach for it
+is a work-in-progress commit on a branch, not a red one on `main`. Nothing else runs the graph yet
+— there is no CI (issue #1).
+
 ## Git conventions
 
 - Default branch is `main`.
