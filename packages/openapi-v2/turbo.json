@@ -7,6 +7,13 @@
     // every upstream build.
     "transit": {
       "dependsOn": ["^transit", "build"]
+    },
+    // Prism serves the bundle, not the source, so the mock cannot start before `build` has written
+    // `dist/openapi.yaml`. Long-running and never cacheable, like any dev server.
+    "mock": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
     }
   }
 }

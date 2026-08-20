@@ -73,6 +73,51 @@ Both must pass before a description change is done. `lint` catches invalid schem
 in `build` is what catches a `$ref` that escapes its file or points at a pointer that does not
 exist, which linting does not always report.
 
+## Mock server
+
+The back end does not exist yet, so the description serves as one. `pnpm mock` from the repository
+root runs [Prism](https://github.com/stoplightio/prism) over `dist/openapi.yaml`, rebuilding the
+bundle first:
+
+```bash
+pnpm mock                                  # → http://127.0.0.1:4010
+curl http://127.0.0.1:4010/markets/au
+```
+
+Point an app at it with `API_URL=http://127.0.0.1:4010` — **without** the `/api/v2` prefix. Prism
+mounts the paths at the root and ignores the `servers` base path, so the prefixed URL would 404.
+
+Three things follow from mocking the description rather than hand-writing fixtures:
+
+- **The `examples` are the mock data.** Prism reads the OpenAPI 3.1 `examples` arrays on each
+  schema, so `GET /markets/au` returns `"Australia"`/`"AUD"` and not `"string"`. An example added
+  for the docs improves the mock at the same time, which is the reason to keep writing them.
+- **Requests are validated against the description.** `GET /markets/zz` gets a 422 naming the
+  `enum` violation, so a front end that builds a URL the API would reject finds out immediately.
+- **Error branches are reachable** with the `Prefer` header, without editing anything:
+  `curl -H 'Prefer: code=404' http://127.0.0.1:4010/markets/au`.
+
+Three caveats:
+
+- **The response does not depend on the request.** `GET /markets/us` returns the `au` example,
+  because an example is a constant and Prism has nothing to vary it with. A country picker will
+  appear to ignore the country. This is the mock's sharpest edge — treat a response as proof the
+  shape is right, never that the routing is.
+
+  Named media-type `examples` plus `Prefer: example=uk` _can_ select between markets, but the
+  selection comes from the header and never from `marketCode`, so it does not fix this — and
+  measured against the cost, it loses: a named example is returned verbatim, so it overrides the
+  schema `examples` above and every market's full payload becomes hand-maintained, re-edited on each
+  new field. Rejected for now; revisit if a flow needs two markets side by side.
+
+- **Undeclared status codes get a Prism-shaped body.** For a code the path item does not list,
+  Prism synthesises RFC 7807 (`{type, title, status, detail}`), which is _not_ the Laravel
+  `{message, errors}` shape. Do not build UI against it; declare the response instead.
+- **`--dynamic` is off.** It generates random data from the schemas rather than replaying the
+  examples, which loses the realistic values above and makes responses differ between runs.
+
+Nothing here is a substitute for running against the real Laravel once it exists.
+
 ## Conventions
 
 | Item                            | Rule                                                                                             | Example                                            |

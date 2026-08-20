@@ -41,8 +41,13 @@ Run everything through the task graph from the repository root; that is also wha
 pnpm install                    # bootstrap; pnpm workspaces, Node >= 22
 pnpm turbo run lint check-types build
 pnpm dev                        # every app's dev server
+pnpm mock                       # Prism mock server over the description, on :4010
 pnpm format                     # prettier
 ```
+
+`mock` is deliberately not part of `dev`: an app pointed at a real back end should not also spin up
+a mock. Point an app at it with `API_URL=http://127.0.0.1:4010` — no `/api/v2` prefix, because
+Prism mounts paths at the root. See `packages/openapi-v2/README.md`.
 
 Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/openapi-v2`.
 
