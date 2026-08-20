@@ -7,8 +7,13 @@ parameter or response field that does not exist fails to compile.
 ```ts
 import { createApiClient, unwrap, ApiError } from "@workspace/api-client";
 
-const api = createApiClient({ baseUrl: process.env.API_URL!, token: () => session?.accessToken });
-const { data } = await api.GET("/markets/{marketCode}", { params: { path: { marketCode: "au" } } });
+const api = createApiClient({
+  baseUrl: process.env.API_URL!,
+  token: () => session?.accessToken,
+});
+const { data } = await api.GET("/markets/{marketCode}", {
+  params: { path: { marketCode: "au" } },
+});
 ```
 
 ## Rules
@@ -23,21 +28,22 @@ const { data } = await api.GET("/markets/{marketCode}", { params: { path: { mark
   want the payload.
 - **The `{data: …}` envelope is not unwrapped here.** It is part of the response schema, so it stays
   visible in the types; each app's data layer strips it.
-- **No app-specific policy.** Base URL and credentials are arguments, not defaults — `apps/admin`
-  authenticates with a session and `apps/www` mostly does not, and both use this package unchanged.
+- **No app-specific policy.** Base URL and credentials are arguments, not defaults. A back office
+  authenticating with a session and a public storefront sending nothing both use this package
+  unchanged, and neither one's needs are baked in as a default for the other to override.
 
 ## `ApiError`
 
 Normalises what the description guarantees about failures: Laravel's `{message}` envelope on any
 JSON request, 422's per-field messages, 429's `Retry-After`.
 
-| Member | Source |
-| --- | --- |
-| `status` | the response status |
-| `message` | the body's `message`, falling back to the status text |
-| `validationErrors` | 422 — field (dot notation for nested and array fields) to its messages |
-| `retryAfterSeconds` | 429 — the `Retry-After` header, when set |
-| `body` | the parsed error body, untouched |
+| Member              | Source                                                                 |
+| ------------------- | ---------------------------------------------------------------------- |
+| `status`            | the response status                                                    |
+| `message`           | the body's `message`, falling back to the status text                  |
+| `validationErrors`  | 422 — field (dot notation for nested and array fields) to its messages |
+| `retryAfterSeconds` | 429 — the `Retry-After` header, when set                               |
+| `body`              | the parsed error body, untouched                                       |
 
 Plus `isValidationError`, `isUnauthenticated`, `isNotFound`, `isRateLimited` and `isServerError` for
 the branches worth naming. 401 means no or expired credentials; 403 means authenticated and refused.

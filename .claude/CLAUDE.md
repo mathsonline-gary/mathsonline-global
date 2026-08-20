@@ -8,6 +8,8 @@ A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/
 
 `mathsonline/membership` is a separate repository that keeps serving `/api/v1`. The two versions share nothing: `membership` owns `api/v1/`, this repository owns the v2 description. Do not look for v2 files there, and do not add v1 files here.
 
+`CONTEXT.md` at the root is the project's glossary. Read it before naming anything in the market domain — it records, among other things, that the wire's `Market.name` is the country and not the brand.
+
 ## Layout
 
 ```
@@ -18,6 +20,8 @@ apps/purchase/         # Next.js front end for the customer purchase flows
 ```
 
 The description is a workspace package like any other, so it lives under `packages/` and Turborepo picks it up from the `packages/*` glob. The name carries the version because the directory that will hold the Laravel back end is `apps/api` — one thing called `api` per repository.
+
+**Each application carries its own UI components.** There is no shared component package: `packages/ui` existed and was removed, because one consumer's shape is not a design system and the indirection cost more than it saved. A second front end gets its own `components/ui/`; whatever genuinely converges can be extracted then, with two real call sites to design against. Do not reintroduce a shared package to hold a component that has one caller.
 
 ## The description leads the implementation
 
@@ -42,7 +46,7 @@ pnpm format                     # prettier
 
 Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/openapi-v2`.
 
-A Laravel back end and the `student`, `teacher` and `parent` front ends are planned but not present yet. There is no test suite and no CI workflow in the repository — add the commands here when they land.
+A Laravel back end and the `www`, `student`, `teacher` and `parent` front ends are planned but not present yet. `www` existed as a `create-next-app` scaffold and was removed until there is something for it to serve. There is no test suite and no CI workflow in the repository — add the commands here when they land.
 
 ## Git conventions
 

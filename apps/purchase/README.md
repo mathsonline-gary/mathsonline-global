@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# purchase
 
-## Getting Started
+The customer-facing purchase flows: new order, renewal, gift, coupon redemption, the homeschool
+discount and the AWE variant, plus the shared checkout and success pages. Taking over from
+membership's Laravel `orders/` pages.
 
-First, run the development server:
+Next.js 16 (App Router), Tailwind CSS v4, shadcn/ui on [`@base-ui/react`](https://base-ui.com).
+
+## Running it
+
+From the repository root, because the task graph builds this app's dependencies first:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm turbo run dev --filter=purchase     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.example` to `.env.local` and point `API_URL` at a `/api/v2` root. Every market read is
+server-side, so the browser never sees that host.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command            | What it does                       |
+| ------------------ | ---------------------------------- |
+| `pnpm dev`         | Development server on port 3000    |
+| `pnpm build`       | Production build                   |
+| `pnpm start`       | Serve the production build         |
+| `pnpm check-types` | `next typegen` then `tsc --noEmit` |
+| `pnpm lint`        | ESLint                             |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## URLs
 
-## Learn More
+The market is the first path segment, and it is the only way a market is chosen — no GeoIP, no
+redirect from a guess, no cookie. An unknown market is a hard 404.
 
-To learn more about Next.js, take a look at the following resources:
+```
+/{market}                          new order
+/{market}/renew                    renewal
+/{market}/gift                     gift
+/{market}/gift/homeschool          gift, homeschool
+/{market}/homeschool-discount      new order, homeschool
+/{market}/homeschool-discount/renew
+/{market}/awe                      AWE
+/{market}/subscribe                coupon redemption
+/{market}/checkout/{uuid}          Stripe Embedded Checkout
+/{market}/success/{uuid}           order success
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`/` has no page: there is nothing to serve without a market, so it 404s.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Which markets exist is decided by `MarketCode` in
+[`@workspace/openapi-v2`](../../packages/openapi-v2/README.md), not by this app.
 
-## Deploy on Vercel
+## Layout
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+src/
+  app/            App Router pages, the root layout, globals.css
+    [market]/     every flow, under the market segment
+  components/
+    ui/           shadcn/ui
+  lib/
+    api/          the typed v2 client, configured for this app
+    markets/      market resolution and the market read
+    utils/
+public/           images ported from membership
+docs/research/    background investigation, not specification
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`@/*` maps to `./src/*`.
+
+## Before changing anything
+
+`CLAUDE.md` holds this app's conventions — component placement, the `*Form` contract, the Base UI
+gotchas, what the pages deliberately do not do yet. `../../CONTEXT.md` holds the market vocabulary.
+Both are short and both will save you a wrong guess.
