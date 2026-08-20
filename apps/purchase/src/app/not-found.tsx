@@ -10,11 +10,11 @@
 export default function NotFound() {
   return (
     <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-3 px-6 py-16">
-      <p className="text-muted-foreground text-sm font-medium">404</p>
+      <p className="text-sm font-medium text-muted-foreground">404</p>
       <h1 className="text-2xl font-semibold tracking-tight">
         This page isn&apos;t available
       </h1>
-      <p className="text-muted-foreground text-sm">
+      <p className="text-sm text-muted-foreground">
         Check the address, or head back to the site you came from to start
         again.
       </p>

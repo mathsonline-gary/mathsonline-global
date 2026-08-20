@@ -9,7 +9,7 @@ Error:
   properties:
     message:
       type: string
-      examples: ['Server Error']
+      examples: ["Server Error"]
 
 ValidationError:
   type: object
@@ -22,7 +22,7 @@ ValidationError:
     message:
       type: string
       description: The first failure message, repeated as a summary.
-      examples: ['The email field is required.']
+      examples: ["The email field is required."]
     errors:
       type: object
       additionalProperties:

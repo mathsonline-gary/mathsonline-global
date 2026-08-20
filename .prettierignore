@@ -5,3 +5,7 @@ node_modules/
 coverage/
 pnpm-lock.yaml
 .pnpm-store/
+
+# Vendored agent skills — upstream's formatting, tracked by skills-lock.json
+.agents/skills/
+.claude/skills/
