@@ -1,9 +1,0 @@
-{
-  "extends": ["//"],
-  "tasks": {
-    "check-types": {
-      "dependsOn": ["transit"],
-      "outputs": ["tsconfig.tsbuildinfo", ".next/types/**"]
-    }
-  }
-}

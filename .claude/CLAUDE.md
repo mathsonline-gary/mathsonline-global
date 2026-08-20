@@ -13,9 +13,8 @@ A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/
 ```
 packages/openapi-v2/   # the OpenAPI 3.1 description of /api/v2 — @workspace/openapi-v2
 packages/api-client/   # typed HTTP client over it — @workspace/api-client
-packages/ui/           # shared components — @workspace/ui
 packages/typescript-config/, packages/eslint-config/
-apps/www/              # Next.js front end
+apps/purchase/         # Next.js front end for the customer purchase flows
 ```
 
 The description is a workspace package like any other, so it lives under `packages/` and Turborepo picks it up from the `packages/*` glob. The name carries the version because the directory that will hold the Laravel back end is `apps/api` — one thing called `api` per repository.
