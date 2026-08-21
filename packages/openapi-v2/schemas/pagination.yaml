@@ -1,0 +1,84 @@
+PaginationLinks:
+  type: object
+  description: |
+    The `links` object of a paginated resource collection. `prev` and `next` are null at the ends of
+    the range.
+  required: [first, last, prev, next]
+  properties:
+    first:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.example.com/api/v2/example?page=1"]
+    last:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.example.com/api/v2/example?page=5"]
+    prev:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.example.com/api/v2/example?page=1"]
+    next:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.example.com/api/v2/example?page=3"]
+
+PaginationMeta:
+  type: object
+  description: |
+    The `meta` object of a paginated resource collection, as produced by a `LengthAwarePaginator`.
+    `from` and `to` are null when the page is empty.
+
+    A simple paginator omits `last_page`, `links` and `total`; a cursor paginator replaces this
+    object entirely with `next_cursor`/`prev_cursor`. Describe those shapes on the operations that
+    use them rather than widening this schema.
+  required: [current_page, path, per_page]
+  properties:
+    current_page:
+      type: integer
+      examples: [2]
+    from:
+      type: [integer, "null"]
+      examples: [16]
+    last_page:
+      type: integer
+      examples: [5]
+    links:
+      type: array
+      items:
+        $ref: "./pagination.yaml#/PaginationLink"
+    path:
+      type: string
+      format: uri
+      description: Base URL for pagination links.
+      examples: ["https://www.example.com/api/v2/example"]
+    per_page:
+      type: integer
+      examples: [15]
+    to:
+      type: [integer, "null"]
+      examples: [30]
+    total:
+      type: integer
+      examples: [68]
+
+PaginationLink:
+  type: object
+  description: |
+    One entry of `meta.links`, the page-by-page list Laravel builds for rendering pagination
+    controls. The first and last entries are the previous/next links and carry translated labels;
+    gaps in long page ranges appear as an entry with a `...` label and a null URL.
+  required: [url, label, active]
+  properties:
+    url:
+      type: [string, "null"]
+      format: uri
+      examples: ["https://www.example.com/api/v2/example?page=1"]
+    label:
+      type: string
+      examples: ["1"]
+    page:
+      type: [integer, "null"]
+      examples: [1]
+    active:
+      type: boolean
+      examples: [false]

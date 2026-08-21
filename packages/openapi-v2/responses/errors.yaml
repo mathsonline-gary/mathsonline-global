@@ -1,0 +1,105 @@
+Unauthenticated:
+  description: |
+    No authenticated user (`AuthenticationException`). Laravel returns this instead of a redirect
+    when the request expects JSON.
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/Error"
+      examples:
+        default:
+          value:
+            message: "Unauthenticated."
+
+Forbidden:
+  description: |
+    The authenticated user is not allowed to perform this action (`AuthorizationException`, or a
+    policy denial). A custom denial message replaces the default.
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/Error"
+      examples:
+        default:
+          value:
+            message: "This action is unauthorized."
+
+NotFound:
+  description: |
+    No such route, or route-model binding found no record. The message is empty for an unmatched
+    route and describes the model when binding fails.
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/Error"
+      examples:
+        default:
+          value:
+            message: "Not found."
+
+MethodNotAllowed:
+  description: |
+    The route exists but not for this HTTP method.
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/Error"
+      examples:
+        default:
+          value:
+            message: "The GET method is not supported for route api/v2/example. Supported methods: POST."
+
+ValidationError:
+  description: The request failed validation (`ValidationException`).
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/ValidationError"
+      examples:
+        default:
+          value:
+            message: The email field is required.
+            errors:
+              email:
+                - The email field is required.
+
+TooManyRequests:
+  description: |
+    The rate limiter rejected the request (`ThrottleRequests`). `Retry-After` and `X-RateLimit-Reset`
+    are only present once the limit has actually been hit.
+  headers:
+    Retry-After:
+      description: Seconds until the limit resets.
+      schema:
+        type: integer
+    X-RateLimit-Limit:
+      schema:
+        type: integer
+    X-RateLimit-Remaining:
+      schema:
+        type: integer
+    X-RateLimit-Reset:
+      description: Unix timestamp at which the limit resets.
+      schema:
+        type: integer
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/Error"
+      examples:
+        default:
+          value:
+            message: Too Many Attempts.
+
+ServerError:
+  description: |
+    An unhandled exception. The message is `Server Error` unless the exception was an HTTP
+    exception carrying its own message.
+  content:
+    application/json:
+      schema:
+        $ref: "../schemas/error.yaml#/Error"
+      examples:
+        default:
+          value:
+            message: Server Error

@@ -1,0 +1,12 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+strictPeerDependencies: false
+
+allowBuilds:
+  # Install-time analytics, pulled in transitively by Prism. Declined — but the entry is required,
+  # not decorative: pnpm fails the install outright (ERR_PNPM_IGNORED_BUILDS) for any dependency
+  # with a build script and no explicit decision here.
+  "@scarf/scarf": false
+  unrs-resolver: true

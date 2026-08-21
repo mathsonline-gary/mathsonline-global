@@ -1,0 +1,34 @@
+/markets/{marketCode}:
+  parameters:
+    - name: marketCode
+      in: path
+      required: true
+      description: The market to retrieve.
+      schema:
+        $ref: "../schemas/market.yaml#/MarketCode"
+
+  get:
+    operationId: showMarket
+    summary: Retrieve a market
+    description: |
+      Returns the storefront configuration for one market: display copy, currency, contact points,
+      and the publishable third-party keys the front end initialises with.
+
+      The market comes from the path, not from the request host, so one origin can read every
+      market — which is what a country picker or a multi-market marketing site needs.
+    tags:
+      - Markets
+    security: [] # public
+    responses:
+      "200":
+        description: The market.
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [data]
+              properties:
+                data:
+                  $ref: "../schemas/market.yaml#/Market"
+      "404":
+        $ref: "../responses/errors.yaml#/NotFound"
