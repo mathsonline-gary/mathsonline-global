@@ -104,11 +104,9 @@ Three caveats:
   appear to ignore the country. This is the mock's sharpest edge — treat a response as proof the
   shape is right, never that the routing is.
 
-  Named media-type `examples` plus `Prefer: example=uk` _can_ select between markets, but the
-  selection comes from the header and never from `marketCode`, so it does not fix this — and
-  measured against the cost, it loses: a named example is returned verbatim, so it overrides the
-  schema `examples` above and every market's full payload becomes hand-maintained, re-edited on each
-  new field. Rejected for now; revisit if a flow needs two markets side by side.
+  Named media-type `examples` plus `Prefer: example=uk` _can_ select between markets, but selection
+  comes from the header, not `marketCode`, and each market's payload becomes hand-maintained.
+  Rejected for now; revisit if a flow needs two markets side by side.
 
 - **Undeclared status codes get a Prism-shaped body.** For a code the path item does not list,
   Prism synthesises RFC 7807 (`{type, title, status, detail}`), which is _not_ the Laravel

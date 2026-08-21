@@ -52,9 +52,9 @@ the branches worth naming. 401 means no or expired credentials; 403 means authen
 
 The client is not generated — it is `openapi-fetch` plus configuration — so it could have lived
 inside the description package. Splitting it keeps that package free of a TypeScript toolchain it
-otherwise has no use for (`tsconfig.json`, eslint, `typescript`, `openapi-fetch`), and it turned out
-to be fewer lines overall, not more. Nothing here resolves through a `tsconfig` `paths` patch:
-`moduleResolution: bundler` follows the dependency's `exports` map to the generated `.ts` directly.
+otherwise has no use for (`tsconfig.json`, eslint, `typescript`, `openapi-fetch`). Nothing here
+resolves through a `tsconfig` `paths` patch: `moduleResolution: bundler` follows the dependency's
+`exports` map to the generated `.ts` directly.
 
 ## Commands
 

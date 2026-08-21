@@ -78,17 +78,12 @@ Vitest, in `@workspace/api-client` and `apps/purchase` — the two packages with
 in order: `prettier --write` over the staged files, then `pnpm turbo run lint check-types test`
 over the whole graph.
 
-The second half is deliberately not scoped to the staged paths. `redocly lint` takes the
-description's entrypoint rather than individual files, and type errors are cross-file — a schema
-change breaks front ends nobody touched, which is the case this repository is arranged to catch.
-Tests are the same story from the other side: a test lives beside its module, but what breaks it
-is usually a change elsewhere. Whole-graph is affordable because turbo restores the unaffected
-packages from cache.
+The second half runs whole-graph, not scoped to staged paths: `redocly lint` takes the
+description's entrypoint, and type errors and test breakage are cross-file, so scoping to staged
+files would miss failures caused elsewhere. Affordable because turbo restores unaffected packages
+from cache.
 
-So a commit whose lint, type-check or tests fail is refused, and prettier's fixes are re-staged into the
-commit rather than left behind. `git commit --no-verify` skips the hook; the reason to reach for it
-is a work-in-progress commit on a branch, not a red one on `main`. Nothing else runs the graph yet
-— there is no CI (issue #1).
+A commit whose lint, type-check or tests fail is refused; prettier's fixes are re-staged. `git commit --no-verify` skips the hook — for work-in-progress branch commits, not a red `main`. No CI yet (issue #1).
 
 ## Git conventions
 
