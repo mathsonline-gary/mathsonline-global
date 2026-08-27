@@ -16,10 +16,16 @@ A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/
 packages/openapi-v2/   # the OpenAPI 3.1 description of /api/v2 — @workspace/openapi-v2
 packages/api-client/   # typed HTTP client over it — @workspace/api-client
 packages/typescript-config/, packages/eslint-config/
+apps/api-v2/           # Laravel back end serving /api/v2
 apps/purchase/         # Next.js front end for the customer purchase flows
+apps/www/, apps/cms/, apps/admin/, apps/student/, apps/teacher/, apps/parent/   # placeholders
 ```
 
-The description is a workspace package like any other, so it lives under `packages/` and Turborepo picks it up from the `packages/*` glob. The name carries the version because the directory that will hold the Laravel back end is `apps/api` — one thing called `api` per repository.
+A placeholder is a directory holding a README and no `package.json`, so pnpm and Turborepo skip it
+until there is an application to build. Do not scaffold one speculatively: `www` was a
+`create-next-app` scaffold once and was removed because it served nothing.
+
+The description is a workspace package like any other, so it lives under `packages/` and Turborepo picks it up from the `packages/*` glob. Both it and the back end carry the version in their name — `@workspace/openapi-v2` and `apps/api-v2` — because this repository is v2 only and an unversioned `api` would invite the question of which version it serves.
 
 **Each application carries its own UI components.** There is no shared component package: `packages/ui` existed and was removed, because one consumer's shape is not a design system and the indirection cost more than it saved. A second front end gets its own `components/ui/`; whatever genuinely converges can be extracted then, with two real call sites to design against. Do not reintroduce a shared package to hold a component that has one caller.
 
@@ -35,14 +41,14 @@ The description is a workspace package like any other, so it lives under `packag
 
 ## Commands
 
-Run everything through the task graph from the repository root; that is also what CI runs.
+Run everything through the task graph from the repository root. There is no CI yet, so this is the only thing that runs the gate besides the pre-commit hook.
 
 ```bash
 pnpm install                    # bootstrap; pnpm workspaces, Node >= 22
 pnpm turbo run lint check-types test build
 pnpm dev                        # every app's dev server
 pnpm mock                       # Prism mock server over the description, on :4010
-pnpm test                       # vitest, once, everywhere it is configured
+pnpm test                       # vitest and pest, once, everywhere configured
 pnpm format                     # prettier
 ```
 
@@ -52,12 +58,29 @@ Prism mounts paths at the root. See `packages/openapi-v2/README.md`.
 
 Scope to one package with `--filter`, e.g. `pnpm turbo run build --filter=@workspace/openapi-v2`.
 
-A Laravel back end and the `www`, `student`, `teacher` and `parent` front ends are planned but not present yet. `www` existed as a `create-next-app` scaffold and was removed until there is something for it to serve. There is no CI workflow in the repository — add the commands here when it lands.
+There is no CI workflow in the repository (issue #1) — add the commands here when it lands.
+
+### `apps/api-v2` in the task graph
+
+It is a Laravel application, and it participates like any other package: its `package.json` carries
+no dependencies and exists only so Turborepo can reach Pint and Pest from the root graph. Composer
+owns what the app installs. `pnpm lint` there is `vendor/bin/pint --test`, `pnpm test` is
+`php artisan test`; there is no `check-types` task because no static analyser is installed yet.
+
+It serves JSON only — no Blade views, no Vite, no asset pipeline, and no `routes/web.php`. Do not
+reintroduce the `laravel new` front-end scaffold. Authentication is deliberately not installed: the
+description declares no `securitySchemes`, and `php artisan install:api` would pick Sanctum ahead of
+that decision.
 
 ## Tests
 
-Vitest, in `@workspace/api-client` and `apps/purchase` — the two packages with runnable code.
+Vitest in `@workspace/api-client` and `apps/purchase`; Pest in `apps/api-v2`.
 `@workspace/openapi-v2` has none: it is YAML, and `redocly lint` is what checks it.
+
+The two ecosystems place tests differently, and each follows its own convention rather than a
+compromise between them.
+
+**TypeScript packages.**
 
 - A test sits beside the module it covers, as `<module>.test.ts`. There is no `__tests__/` or
   `tests/` directory; a test that has to be found by path rather than by proximity is a test
@@ -71,6 +94,10 @@ Vitest, in `@workspace/api-client` and `apps/purchase` — the two packages with
   screen reader cannot find, a test should not be able to find either.
 - `describe`/`it`/`expect` are imported from `vitest` rather than made global, so a test file
   declares its own dependencies like any other module.
+
+**`apps/api-v2`.** Pest, under `tests/Feature/` and `tests/Unit/` — Laravel's own layout, which
+`phpunit.xml` and Pest's discovery both assume. The beside-the-module rule above does not reach
+here. `phpunit.xml` points the suite at in-memory SQLite, so the tests need no database set up.
 
 ## Commits are gated by a pre-commit hook
 
