@@ -285,3 +285,6 @@ $RECYCLE.BIN/
 
 # pnpm keeps its store inside the repo when the project and $HOME are on different filesystems
 .pnpm-store
+
+# Sandbox environment config; .sbxenv.example.yaml is the committed template
+.sbxenv.yaml

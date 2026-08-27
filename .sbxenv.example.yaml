@@ -16,7 +16,7 @@ kits:
 
 secrets:
   github:
-    command: gh auth token --user mathsonline-gary
+    command: gh auth token --user <github-username>
 
 ports:
   - sandbox: 3000
