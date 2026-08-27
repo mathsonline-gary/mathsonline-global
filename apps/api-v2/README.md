@@ -1,58 +1,46 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# api-v2
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+The Laravel back end implementing `/api/v2` — the one server behind `purchase` and the signed-in
+front ends. `mathsonline/membership` keeps serving `/api/v1`; the two share nothing.
 
-## About Laravel
+A pure API: no Blade views, no Vite, no asset pipeline. JSON in, JSON out.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## The description leads
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Every path is written in [`@workspace/openapi-v2`](../../packages/openapi-v2/README.md) first. A
+route, controller or FormRequest is finished when it matches the description — never the other way
+round, and the description is never generated from this code.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Running it
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer run setup       # install, .env, key, migrate
+composer run dev         # php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+From the repository root, `pnpm turbo run dev --filter=api-v2` does the same through the task graph.
 
-## Contributing
+| Command     | What it does             |
+| ----------- | ------------------------ |
+| `pnpm dev`  | `php artisan serve`      |
+| `pnpm lint` | Pint, check-only         |
+| `pnpm test` | Pest, via `artisan test` |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The `package.json` carries no dependencies. It exists so Turborepo can reach the PHP tooling from
+the root task graph; Composer owns everything this app actually installs.
 
-## Code of Conduct
+## Layout
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```text
+app/            Http/, Models/, Providers/
+routes/api.php  every v2 path, mounted at /api
+config/
+database/       migrations, factories, seeders
+tests/          Pest — Feature/ and Unit/
+```
 
-## Security Vulnerabilities
+## Not decided yet
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Authentication. The description declares no `securitySchemes`, so no auth package is installed.
+When the scheme is described, `php artisan install:api --force` adds Sanctum (or `--passport`)
+and rewrites `routes/api.php`.
