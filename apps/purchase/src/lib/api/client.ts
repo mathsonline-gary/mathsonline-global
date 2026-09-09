@@ -16,16 +16,16 @@ export function api() {
  * Next.js cache options for one request, as an `openapi-fetch` init fragment:
  *
  * ```ts
- * api().GET("/markets/{marketCode}", {
- *   params: { path: { marketCode } },
- *   ...nextCache({ revalidate: 300, tags: [`market:${marketCode}`] }),
+ * api().GET("/brands/{brandCode}", {
+ *   params: { path: { brandCode } },
+ *   ...nextCache({ revalidate: 300, tags: [`brand:${brandCode}`] }),
  * });
  * ```
  *
  * Needed because `openapi-fetch` builds a `Request` and calls `fetch(request, ext)`, where `ext`
  * comes from the *client's* `requestInitExt`. A `next` key on a per-call init lands on the
  * `Request` instead, where Next's patched `fetch` never looks — so it would be silently ignored
- * and every read would be uncached. Overriding `fetch` for the call is what gets per-market tags
+ * and every read would be uncached. Overriding `fetch` for the call is what gets per-brand tags
  * through.
  *
  * Deliberately here and not in `@workspace/api-client`: that package holds no app-specific policy,

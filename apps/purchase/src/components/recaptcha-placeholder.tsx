@@ -1,7 +1,7 @@
 /**
  * Where the reCAPTCHA widget goes.
  *
- * A box, not a widget: the real one needs the market's site key and a submit
+ * A box, not a widget: the real one needs the brand's site key and a submit
  * handler that reads its response token, and neither exists while these pages
  * are UI only.
  */

@@ -40,9 +40,9 @@ packages/openapi-v2/
 ├── turbo.json             # carries "build before dependents type-check" to the graph
 ├── openapi.yaml           # root description — index of every path and component
 ├── paths/
-│   └── markets.yaml       # every path item under /markets
+│   └── brands.yaml        # every path item under /brands
 ├── schemas/
-│   ├── market.yaml        # Market, MarketCode
+│   ├── brand.yaml         # Brand, BrandCode
 │   ├── error.yaml         # Error, ValidationError
 │   └── pagination.yaml    # PaginationLinks, PaginationMeta, PaginationLink
 ├── responses/
@@ -81,7 +81,7 @@ bundle first:
 
 ```bash
 pnpm mock                                  # → http://127.0.0.1:4010
-curl http://127.0.0.1:4010/markets/au
+curl http://127.0.0.1:4010/brands/MOL_AU
 ```
 
 Point an app at it with `API_URL=http://127.0.0.1:4010` — **without** the `/api/v2` prefix. Prism
@@ -90,23 +90,23 @@ mounts the paths at the root and ignores the `servers` base path, so the prefixe
 Three things follow from mocking the description rather than hand-writing fixtures:
 
 - **The `examples` are the mock data.** Prism reads the OpenAPI 3.1 `examples` arrays on each
-  schema, so `GET /markets/au` returns `"Australia"`/`"AUD"` and not `"string"`. An example added
+  schema, so `GET /brands/MOL_AU` returns `"Australia"`/`"AUD"` and not `"string"`. An example added
   for the docs improves the mock at the same time, which is the reason to keep writing them.
-- **Requests are validated against the description.** `GET /markets/zz` gets a 422 naming the
+- **Requests are validated against the description.** `GET /brands/au` gets a 422 naming the
   `enum` violation, so a front end that builds a URL the API would reject finds out immediately.
 - **Error branches are reachable** with the `Prefer` header, without editing anything:
-  `curl -H 'Prefer: code=404' http://127.0.0.1:4010/markets/au`.
+  `curl -H 'Prefer: code=404' http://127.0.0.1:4010/brands/MOL_AU`.
 
 Three caveats:
 
-- **The response does not depend on the request.** `GET /markets/us` returns the `au` example,
+- **The response does not depend on the request.** `GET /brands/MOL_US` returns the `MOL_AU` example,
   because an example is a constant and Prism has nothing to vary it with. A country picker will
   appear to ignore the country. This is the mock's sharpest edge — treat a response as proof the
   shape is right, never that the routing is.
 
-  Named media-type `examples` plus `Prefer: example=uk` _can_ select between markets, but selection
-  comes from the header, not `marketCode`, and each market's payload becomes hand-maintained.
-  Rejected for now; revisit if a flow needs two markets side by side.
+  Named media-type `examples` plus `Prefer: example=uk` _can_ select between brands, but selection
+  comes from the header, not `brandCode`, and each brand's payload becomes hand-maintained.
+  Rejected for now; revisit if a flow needs two brands side by side.
 
 - **Undeclared status codes get a Prism-shaped body.** For a code the path item does not list,
   Prism synthesises RFC 7807 (`{type, title, status, detail}`), which is _not_ the Laravel
@@ -118,21 +118,21 @@ Nothing here is a substitute for running against the real Laravel once it exists
 
 ## Conventions
 
-| Item                            | Rule                                                                                             | Example                                            |
-| ------------------------------- | ------------------------------------------------------------------------------------------------ | -------------------------------------------------- |
-| Path file                       | one per resource — the first path segment                                                        | `/markets/*` → `paths/markets.yaml`                |
-| Path file keys                  | the full path strings, exactly as `paths` spells them                                            | `/markets/{marketCode}:`                           |
-| Root `$ref` to a path item      | JSON Pointer into that file, `/` escaped as `~1`, directly under the same URL written as the key | `'./paths/markets.yaml#/~1markets~1{marketCode}'`  |
-| Component file, many components | lower-case resource or group name, components as top-level keys                                  | `schemas/market.yaml` → `#/Market`, `#/MarketCode` |
-| Component file, one component   | PascalCase, filename = component name                                                            | (none yet)                                         |
-| Component directory             | mirrors the OpenAPI key exactly                                                                  | `responses/`, not `error-responses/`               |
+| Item                            | Rule                                                                                             | Example                                         |
+| ------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
+| Path file                       | one per resource — the first path segment                                                        | `/brands/*` → `paths/brands.yaml`               |
+| Path file keys                  | the full path strings, exactly as `paths` spells them                                            | `/brands/{brandCode}:`                          |
+| Root `$ref` to a path item      | JSON Pointer into that file, `/` escaped as `~1`, directly under the same URL written as the key | `'./paths/brands.yaml#/~1brands~1{brandCode}'`  |
+| Component file, many components | lower-case resource or group name, components as top-level keys                                  | `schemas/brand.yaml` → `#/Brand`, `#/BrandCode` |
+| Component file, one component   | PascalCase, filename = component name                                                            | (none yet)                                      |
+| Component directory             | mirrors the OpenAPI key exactly                                                                  | `responses/`, not `error-responses/`            |
 
 - **`openapi.yaml` registers every component**, not just the widely-used ones: one file that lists
   what exists and where it lives.
 - **A path item is keyed by URL, not by verb.** All methods for one URL share one keyed block and
   its `parameters`, which is why the keys are path strings and not Laravel-ish labels (`show`,
   `index`) — those name operations, and would be a lie the moment a second method appears on the
-  same URL. The Laravel verb lives in `operationId` (`showMarket`), where it cannot drift.
+  same URL. The Laravel verb lives in `operationId` (`showBrand`), where it cannot drift.
 - **The description is hand-maintained**, not generated from the code. Because it leads the
   implementation, a route or FormRequest is only complete once it matches the description — and
   `dist/` is generated, so it is never edited or committed.
@@ -155,7 +155,7 @@ Laravel 11+, for instance, which older references omit. Re-check on a major upgr
 | `schemas/pagination.yaml`                       | `PaginatedResourceResponse` + `LengthAwarePaginator`      |
 
 Laravel emits these whether or not the description opts in, so they are facts about the API rather
-than design claims. A path item lists only the codes it actually distinguishes — `showMarket`
+than design claims. A path item lists only the codes it actually distinguishes — `showBrand`
 documents `200` and `404`, not the whole table.
 
 ## Response envelope
@@ -165,7 +165,7 @@ two versions are independent and v2 does not follow it.
 
 OpenAPI has no generics, so `{data: T}` cannot be declared once and reused — every operation
 declares its own wrapper. Where the wrapper is five lines used by one operation, it is written
-inline in the path item rather than given a `MarketResource` component of its own. Only the
+inline in the path item rather than given a `BrandResource` component of its own. Only the
 non-generic leaves are components: `PaginationLinks`, `PaginationMeta`, `PaginationLink`.
 
 Those pagination leaves are unused so far. When the first collection endpoint lands, decide whether

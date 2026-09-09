@@ -11,7 +11,7 @@ describe("formatPrice", () => {
     expect(formatPrice(19.97, "AUD")).toBe("$19.97");
   });
 
-  it("draws the narrow symbol of the market's currency", () => {
+  it("draws the narrow symbol of the brand's currency", () => {
     expect(formatPrice(19.97, "USD")).toBe("$19.97");
     expect(formatPrice(14.97, "GBP")).toBe("£14.97");
   });

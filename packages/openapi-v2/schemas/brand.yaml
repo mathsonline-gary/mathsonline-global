@@ -1,22 +1,38 @@
-Market:
+Brand:
   type: object
   description: |
-    Storefront configuration for one market: display copy, currency, contact points, and the
+    Storefront configuration for one brand: display copy, currency, contact points, and the
     publishable third-party keys a client initialises with.
   required:
-    [code, name, currency, marketing_website, info_email, feedback_email]
+    [
+      code,
+      name,
+      market,
+      currency,
+      marketing_website,
+      info_email,
+      feedback_email,
+    ]
   properties:
     code:
-      $ref: "./market.yaml#/MarketCode"
+      $ref: "./brand.yaml#/BrandCode"
     name:
       type: string
-      description: Human-readable market name, for display only. Branch on `code`, not on this.
+      description: |
+        The product name the customer sees this brand under. Varies between brands, so copy
+        interpolates it rather than spelling it out.
+      examples: ["MathsOnline"]
+    market:
+      type: string
+      description: |
+        The country this brand sells into, as display text. Display only — branch on `code`, never
+        on this.
       examples: ["Australia"]
     currency:
       type: string
       minLength: 3
       maxLength: 3
-      description: The market's default currency, ISO 4217 alpha-3, upper-case.
+      description: The brand's default currency, ISO 4217 alpha-3, upper-case.
       examples: ["AUD"]
     marketing_website:
       type: string
@@ -44,7 +60,7 @@ Market:
     stripe:
       type: object
       description: |
-        Publishable Stripe configuration. Absent when the market has no Stripe account configured.
+        Publishable Stripe configuration. Absent when the brand has no Stripe account configured.
       properties:
         publishable_key:
           type: string
@@ -53,7 +69,7 @@ Market:
       type: object
       description: |
         Publishable Google keys. Absent when none are configured; an individual key is absent when
-        that integration is not set up for the market.
+        that integration is not set up for the brand.
       properties:
         recaptcha_site_key:
           type: string
@@ -67,10 +83,11 @@ Market:
           type: string
           examples: ["GTM-XXXXXXX"]
 
-MarketCode:
+BrandCode:
   type: string
   description: |
-    Identifies a market. A lower-case slug, not an ISO country code — `uk` is not ISO 3166-1
-    alpha-2 (`GB` is). Validate against this enum, never against an ISO country list.
-  enum: [au, us, uk]
-  examples: ["au"]
+    Identifies a brand. Membership's own `brands.code`, upper-case and taken verbatim. Not a country
+    code and not a URL segment — a purchase URL's `au` is a market slug that a consumer maps onto
+    `MOL_AU`. Validate against this enum, never against an ISO country list.
+  enum: [MOL_AU, MOL_UK, MOL_US]
+  examples: ["MOL_AU"]

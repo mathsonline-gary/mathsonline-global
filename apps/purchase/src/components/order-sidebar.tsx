@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import type { Market } from "@/lib/markets/types";
+import type { Brand } from "@/lib/brands/types";
 
 /**
  * The reassurance column beside the purchase form — testimonial, guarantee,
@@ -40,20 +40,24 @@ type Testimonial = {
 
 /**
  * The customer quotes, hard-coded rather than fetched. They are marketing copy,
- * not market configuration — not on the v2 market payload's allowlist, and
+ * not brand configuration — not on the v2 brand payload's allowlist, and
  * changing on a copywriter's timescale — so they ship with the component.
  *
- * Membership keys them on `brands.id`; here they are keyed on the market code,
- * which is the only market identity on the wire. Each ported quote is matched to
- * its market by the reviewer's own stated location.
+ * Membership keys them on `brands.id`; here they are keyed on the brand code,
+ * which is the brand's identity on the wire. Each ported quote is matched to
+ * its brand by the reviewer's own stated location.
  *
- * Coverage is ragged in membership too — only some markets have a quote for
+ * The quotes name the product literally, unlike the rest of the copy. They are
+ * verbatim customer words — interpolating a brand name into someone's quote
+ * would misattribute it.
+ *
+ * Coverage is ragged in membership too — only some brands have a quote for
  * some variants — so a missing one renders nothing. Don't invent copy to fill
  * a gap.
  */
 const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
   default: {
-    au: {
+    MOL_AU: {
       quote: [
         '"Hi my name is Nate, I love MathOnline because it is simple to use and the video tells you what you going to be doing and the next exercise.',
         'With MathOnline I am two years ahead and mum can go and check, to see what percentage I am working at. I am currently working at 90%."',
@@ -62,7 +66,7 @@ const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
       location: "Baldivis WA",
       avatar: "/testimonials/au.jpg",
     },
-    uk: {
+    MOL_UK: {
       quote: [
         "I had my daughter Katie tutored, but saw that she was not learning and finding maths confusing, so I started her off at MathsOnline. She was 11 years old, but started in Year 5.",
         "Amazingly, she shot right up to KS3 within 6 months and then did her math GCSE at the age of 13!",
@@ -72,7 +76,7 @@ const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
       location: "UK",
       avatar: "/testimonials/uk.jpg",
     },
-    us: {
+    MOL_US: {
       quote: [
         "Our oldest graduated last year and even though he only used the program for less than two years his math improved so much that he did great on his SAT test and went right into regular college math and is doing great.",
       ],
@@ -82,7 +86,7 @@ const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
     },
   },
   homeschool: {
-    uk: {
+    MOL_UK: {
       quote: [
         "We are a home educating family who have used MathsOnline for several years.",
         "The programme provided our son with an excellent foundation for his iGCSE Maths examination (he has since gone on to study A-Level Maths at 6th Form).",
@@ -92,7 +96,7 @@ const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
       location: "UK",
       avatar: "/testimonials/uk-homeschool.jpg",
     },
-    us: {
+    MOL_US: {
       quote: [
         "As a homeschooling parent for the past 11 years, all three of our children love the program better than any other curriculum we have utilized.",
       ],
@@ -102,7 +106,7 @@ const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
     },
   },
   awe: {
-    uk: {
+    MOL_UK: {
       quote: [
         "I love MathsOnline! As a Home Educating parent MathsOnline has given me the peace of mind, over many years, knowing that everything is covered and I haven’t missed anything. All of my children and my grandchildren have used MathsOnline at various stages and I see the progress they have made. The short bitesize lessons actually teach topics, rather than just test/revise like many maths programmes do, so it is perfect for Home Education.",
         "It is very easy to use and flexible so you can skip forward or go over things again if you need to. It is great for parents to see what lessons their child has completed and their progress with certificates you can print too. The parent area reports are suitable for sending to your Local Authority if you wish which is also a valuable resource. I know numerous Home Educators have been depending on MathsOnline for a great many years, so I totally recommend this resource.",
@@ -115,13 +119,13 @@ const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
 };
 
 function TestimonialCard({
-  market,
+  brand,
   variant,
 }: {
-  market: string;
+  brand: string;
   variant: OrderSidebarVariant;
 }) {
-  const testimonial = TESTIMONIALS[variant][market];
+  const testimonial = TESTIMONIALS[variant][brand];
 
   if (!testimonial) {
     return null;
@@ -164,11 +168,17 @@ function TestimonialCard({
  * which brings the focus trap, escape-to-close and `aria-modal` wiring that
  * version never had.
  *
- * Membership interpolates the brand name into this copy from `$brand->name`.
- * There is one brand now, so the name is a literal. The only thing that still
- * varies by market is whether there is a phone number to call.
+ * Membership interpolates the brand name into this copy from `$brand->name`,
+ * and so does this — the name varies between brands. The other thing that
+ * varies is whether there is a phone number to call.
  */
-function GuaranteeDialog({ supportPhone }: { supportPhone: string | null }) {
+function GuaranteeDialog({
+  name,
+  supportPhone,
+}: {
+  name: string;
+  supportPhone: string | null;
+}) {
   return (
     <Dialog>
       <DialogTrigger className="flex w-full items-center gap-4 rounded-xl bg-teal-100 p-6 text-left text-secondary-foreground md:p-8">
@@ -202,7 +212,7 @@ function GuaranteeDialog({ supportPhone }: { supportPhone: string | null }) {
         <div className="space-y-2">
           <h3 className="text-xl font-bold">You have nothing to risk.</h3>
           <p>
-            Put MathsOnline&apos;s proven strategies to work for you and your
+            Put {name}&apos;s proven strategies to work for you and your
             children.
           </p>
           <p>
@@ -274,17 +284,17 @@ function BuyWithConfidenceCard() {
 }
 
 export function OrderSidebar({
-  market,
+  brand,
   variant = "default",
 }: {
-  market: Market;
+  brand: Brand;
   variant?: OrderSidebarVariant;
 }) {
   return (
     <div className="space-y-4">
       {variant === "homeschool" ? <HomeschoolBanner /> : null}
 
-      <TestimonialCard market={market.code} variant={variant} />
+      <TestimonialCard brand={brand.code} variant={variant} />
 
       {variant === "awe" ? (
         <Card>
@@ -300,7 +310,7 @@ export function OrderSidebar({
         </Card>
       ) : null}
 
-      <GuaranteeDialog supportPhone={market.supportPhone} />
+      <GuaranteeDialog name={brand.name} supportPhone={brand.supportPhone} />
       <BuyWithConfidenceCard />
     </div>
   );

@@ -20,27 +20,28 @@ function stubFetch(body: unknown, init?: ResponseInit) {
   return { requests, fetch };
 }
 
-const MARKET = {
-  code: "au",
-  name: "Australia",
+const BRAND = {
+  code: "MOL_AU",
+  name: "MathsOnline",
+  market: "Australia",
 } as const;
 
 describe("createApiClient", () => {
   it("resolves a path against the base URL and asks for JSON", async () => {
-    const { requests, fetch } = stubFetch(MARKET);
+    const { requests, fetch } = stubFetch(BRAND);
 
     await createApiClient({ baseUrl: BASE_URL, fetch }).GET(
-      "/markets/{marketCode}",
-      { params: { path: { marketCode: "au" } } },
+      "/brands/{brandCode}",
+      { params: { path: { brandCode: "MOL_AU" } } },
     );
 
-    expect(requests[0]?.url).toBe(`${BASE_URL}/markets/au`);
+    expect(requests[0]?.url).toBe(`${BASE_URL}/brands/MOL_AU`);
     expect(requests[0]?.headers.get("Accept")).toBe("application/json");
   });
 
   it("resolves the token per request rather than capturing it once", async () => {
     const tokens = ["first", "second"];
-    const { requests, fetch } = stubFetch(MARKET);
+    const { requests, fetch } = stubFetch(BRAND);
     const client = createApiClient({
       baseUrl: BASE_URL,
       fetch,
@@ -48,8 +49,8 @@ describe("createApiClient", () => {
     });
 
     const get = () =>
-      client.GET("/markets/{marketCode}", {
-        params: { path: { marketCode: "au" } },
+      client.GET("/brands/{brandCode}", {
+        params: { path: { brandCode: "MOL_AU" } },
       });
     await get();
     await get();
@@ -61,13 +62,15 @@ describe("createApiClient", () => {
   });
 
   it("awaits an async token", async () => {
-    const { requests, fetch } = stubFetch(MARKET);
+    const { requests, fetch } = stubFetch(BRAND);
 
     await createApiClient({
       baseUrl: BASE_URL,
       fetch,
       token: async () => "async-token",
-    }).GET("/markets/{marketCode}", { params: { path: { marketCode: "au" } } });
+    }).GET("/brands/{brandCode}", {
+      params: { path: { brandCode: "MOL_AU" } },
+    });
 
     expect(requests[0]?.headers.get("Authorization")).toBe(
       "Bearer async-token",
@@ -75,33 +78,37 @@ describe("createApiClient", () => {
   });
 
   it("sends the request unauthenticated when the token resolves to undefined", async () => {
-    const { requests, fetch } = stubFetch(MARKET);
+    const { requests, fetch } = stubFetch(BRAND);
 
     await createApiClient({
       baseUrl: BASE_URL,
       fetch,
       token: () => undefined,
-    }).GET("/markets/{marketCode}", { params: { path: { marketCode: "au" } } });
+    }).GET("/brands/{brandCode}", {
+      params: { path: { brandCode: "MOL_AU" } },
+    });
 
     expect(requests[0]?.headers.get("Authorization")).toBeNull();
   });
 
   it("lets the token win over a header of the same name", async () => {
-    const { requests, fetch } = stubFetch(MARKET);
+    const { requests, fetch } = stubFetch(BRAND);
 
     await createApiClient({
       baseUrl: BASE_URL,
       fetch,
       headers: { Authorization: "Bearer stale", "Accept-Language": "en-AU" },
       token: () => "fresh",
-    }).GET("/markets/{marketCode}", { params: { path: { marketCode: "au" } } });
+    }).GET("/brands/{brandCode}", {
+      params: { path: { brandCode: "MOL_AU" } },
+    });
 
     expect(requests[0]?.headers.get("Authorization")).toBe("Bearer fresh");
     expect(requests[0]?.headers.get("Accept-Language")).toBe("en-AU");
   });
 
   it("is a factory — two clients share no state", () => {
-    const { fetch } = stubFetch(MARKET);
+    const { fetch } = stubFetch(BRAND);
     const config = { baseUrl: BASE_URL, fetch };
 
     expect(createApiClient(config)).not.toBe(createApiClient(config));
@@ -111,21 +118,21 @@ describe("createApiClient", () => {
 describe("unwrap", () => {
   it("returns the payload of a successful result", () => {
     expect(
-      unwrap({ data: MARKET, response: new Response(null, { status: 200 }) }),
-    ).toBe(MARKET);
+      unwrap({ data: BRAND, response: new Response(null, { status: 200 }) }),
+    ).toBe(BRAND);
   });
 
   it("throws the normalised error when the result carries one", () => {
     expect(() =>
       unwrap({
-        error: { message: "No market matches the code ZZ." },
+        error: { message: "No brand matches the code ZZ." },
         response: new Response(null, { status: 404 }),
       }),
     ).toThrowError(
       expect.objectContaining({
         name: "ApiError",
         status: 404,
-        message: "No market matches the code ZZ.",
+        message: "No brand matches the code ZZ.",
       }),
     );
   });

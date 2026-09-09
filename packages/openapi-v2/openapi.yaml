@@ -15,14 +15,14 @@ servers:
         description: Any domain served by this application.
 
 tags:
-  - name: Markets
-    description: Storefront configuration per market, addressed by market code.
+  - name: Brands
+    description: Storefront configuration per brand, addressed by brand code.
 
 # One file per resource; the pointer after `#` is the path string with `/` escaped as `~1`, so the
 # key above each `$ref` and the pointer inside it spell the same URL.
 paths:
-  /markets/{marketCode}:
-    $ref: "./paths/markets.yaml#/~1markets~1{marketCode}"
+  /brands/{brandCode}:
+    $ref: "./paths/brands.yaml#/~1brands~1{brandCode}"
 
 components:
   responses:
@@ -52,7 +52,7 @@ components:
       $ref: "./schemas/pagination.yaml#/PaginationMeta"
     PaginationLink:
       $ref: "./schemas/pagination.yaml#/PaginationLink"
-    Market:
-      $ref: "./schemas/market.yaml#/Market"
-    MarketCode:
-      $ref: "./schemas/market.yaml#/MarketCode"
+    Brand:
+      $ref: "./schemas/brand.yaml#/Brand"
+    BrandCode:
+      $ref: "./schemas/brand.yaml#/BrandCode"

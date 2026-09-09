@@ -14,10 +14,10 @@ function responseWith(
 describe("ApiError.from", () => {
   it("takes its message from the envelope the description guarantees", () => {
     const error = ApiError.from(responseWith(404, "Not Found"), {
-      message: "No market matches the code AU.",
+      message: "No brand matches the code MOL_AU.",
     });
 
-    expect(error.message).toBe("No market matches the code AU.");
+    expect(error.message).toBe("No brand matches the code MOL_AU.");
     expect(error.status).toBe(404);
     expect(error.isNotFound).toBe(true);
   });

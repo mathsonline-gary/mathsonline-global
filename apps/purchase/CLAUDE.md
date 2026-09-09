@@ -3,7 +3,7 @@
 # apps/purchase
 
 The customer-facing purchase flows, taking over from membership's Laravel `orders/` pages. The
-repository-wide rules are in `../../.claude/CLAUDE.md`; the market vocabulary is in
+repository-wide rules are in `../../.claude/CLAUDE.md`; the brand vocabulary is in
 `../../CONTEXT.md`. What follows holds for this app only.
 
 ## State
@@ -22,13 +22,14 @@ No form library is installed. Picking one is a decision to make when the first f
 - **App Router** under `src/app/`, path alias `@/*` → `./src/*`. Route params are typed with Next's
   generated `PageProps<'/route'>` / `LayoutProps<'/route'>` globals — which is why `check-types` runs
   `next typegen` first. `params` is a Promise; `await` it.
-- **Every `[market]` page resolves through `requireMarket(segment)`** — membership check, then the
-  market read, then `notFound()`. Matching is exact and lower-case: `/AU` is a 404, not a redirect,
+- **Every `[market]` page resolves through `requireBrand(segment)`** — the segment is a _market
+  slug_ (`au`), mapped onto a _brand code_ (`MOL_AU`) by a static table, then the brand read, then
+  `notFound()`. Matching is exact and lower-case: `/AU` is a 404, not a redirect,
   and there is no GeoIP routing.
-- **Module file naming** is kebab-case, one exported concept per file (`require-market.ts`,
-  `market-code.ts`, `utils/cn.ts`). A dot suffix marks a _kind_ of file: `*.api.ts` is an API
+- **Module file naming** is kebab-case, one exported concept per file (`require-brand.ts`,
+  `brand-code.ts`, `utils/cn.ts`). A dot suffix marks a _kind_ of file: `*.api.ts` is an API
   boundary and the seam where a real `fetch` lands. There is no `services/` layer — modules group by
-  domain (`lib/markets/`), not by technical role. `lib/utils/` is the exception that proves it:
+  domain (`lib/brands/`), not by technical role. `lib/utils/` is the exception that proves it:
   standalone helpers belonging to no domain, still one per file.
 - **Component placement follows use, not category.** Used by more than one route → `src/components/`.
   Used by exactly one route → a `_components/` folder beside that route. Used by exactly one caller

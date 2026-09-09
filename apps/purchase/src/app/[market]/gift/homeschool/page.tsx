@@ -1,7 +1,7 @@
 import { GiftForm } from "@/components/gift-form";
 import { HomeschoolBanner } from "@/components/homeschool-banner";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 /**
  * Homeschool gift. The gift form with the half-price artwork above it — the
@@ -10,13 +10,13 @@ import { requireMarket } from "@/lib/markets/require-market";
 export default async function GiftHomeschoolPage({
   params,
 }: PageProps<"/[market]/gift/homeschool">) {
-  const { market: code } = await params;
+  const { market: slug } = await params;
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4">
       <HomeschoolBanner />
       <SecureCheckoutCard>
-        <GiftForm market={await requireMarket(code)} />
+        <GiftForm brand={await requireBrand(slug)} />
       </SecureCheckoutCard>
     </div>
   );

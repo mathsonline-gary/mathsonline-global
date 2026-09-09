@@ -5,7 +5,7 @@ import { TermsAgreementField } from "@/components/terms-agreement-field";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import type { Market } from "@/lib/markets/types";
+import type { Brand } from "@/lib/brands/types";
 
 /**
  * The new-order form, ported from membership's `orders/create/new.blade.php`:
@@ -23,12 +23,12 @@ import type { Market } from "@/lib/markets/types";
  * fields are uncontrolled, and the `react-hook-form` + `zod` schema, the
  * reCAPTCHA widget and the POST to membership all land with the flow's logic.
  */
-export function PurchaseForm({ market }: { market: Market }) {
+export function PurchaseForm({ brand }: { brand: Brand }) {
   return (
     <form className="space-y-4">
       <section>
         <StepHeading step={1}>Choose Membership</StepHeading>
-        <PlanSelector currency={market.currency} />
+        <PlanSelector currency={brand.currency} />
       </section>
 
       <section>
@@ -80,7 +80,7 @@ export function PurchaseForm({ market }: { market: Market }) {
         </FieldGroup>
       </section>
 
-      <TermsAgreementField marketingWebsite={market.marketingWebsite} />
+      <TermsAgreementField marketingWebsite={brand.marketingWebsite} />
 
       <RecaptchaPlaceholder />
 

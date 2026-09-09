@@ -1,4 +1,4 @@
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 import { CheckoutEmbedPlaceholder } from "../_components/checkout-embed-placeholder";
 
@@ -14,9 +14,9 @@ import { CheckoutEmbedPlaceholder } from "../_components/checkout-embed-placehol
 export default async function CheckoutPage({
   params,
 }: PageProps<"/[market]/checkout/[uuid]">) {
-  const { market: code } = await params;
+  const { market: slug } = await params;
 
-  await requireMarket(code);
+  await requireBrand(slug);
 
   return <CheckoutEmbedPlaceholder />;
 }

@@ -1,7 +1,7 @@
 import { OrderSidebar } from "@/components/order-sidebar";
 import { PurchaseForm } from "@/components/purchase-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 /**
  * Homeschool new order. Renamed off membership's `homeschool50` leaf — the `50`
@@ -18,19 +18,19 @@ import { requireMarket } from "@/lib/markets/require-market";
 export default async function HomeschoolDiscountPage({
   params,
 }: PageProps<"/[market]/homeschool-discount">) {
-  const { market: code } = await params;
-  const market = await requireMarket(code);
+  const { market: slug } = await params;
+  const brand = await requireBrand(slug);
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">
       <section className="space-y-4 lg:col-span-3">
         <SecureCheckoutCard>
-          <PurchaseForm market={market} />
+          <PurchaseForm brand={brand} />
         </SecureCheckoutCard>
       </section>
 
       <div className="lg:col-span-2">
-        <OrderSidebar market={market} variant="homeschool" />
+        <OrderSidebar brand={brand} variant="homeschool" />
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ export type ApiClient = Client<paths>;
 
 export interface ApiClientConfig {
   /**
-   * Root of the API, including the `/api/v2` prefix — the description's `servers[].url`. Per market
+   * Root of the API, including the `/api/v2` prefix — the description's `servers[].url`. Per brand
    * host, so it is the caller's to decide, never this package's.
    */
   baseUrl: string;
