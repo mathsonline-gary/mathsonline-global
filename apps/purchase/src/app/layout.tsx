@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 /**
- * Placeholder only. The per-market title, description and the Organization JSON-LD belong to the
- * `[market]` segment, because the root layout cannot know which market is being served.
+ * Placeholder only. The per-brand title, description and the Organization JSON-LD belong to the
+ * `[market]` segment, because the root layout cannot know which brand is being served.
  */
 export const metadata: Metadata = {
   title: "Purchase",

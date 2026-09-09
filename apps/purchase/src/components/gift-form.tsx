@@ -6,7 +6,7 @@ import { TermsAgreementField } from "@/components/terms-agreement-field";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import type { Market } from "@/lib/markets/types";
+import type { Brand } from "@/lib/brands/types";
 
 /**
  * The gift form, ported from membership's `orders/create/gift.blade.php`, and
@@ -22,12 +22,12 @@ import type { Market } from "@/lib/markets/types";
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */
-export function GiftForm({ market }: { market: Market }) {
+export function GiftForm({ brand }: { brand: Brand }) {
   return (
     <form className="space-y-4">
       <section>
         <StepHeading step={1}>Choose Membership</StepHeading>
-        <PlanSelector currency={market.currency} />
+        <PlanSelector currency={brand.currency} />
       </section>
 
       <section className="space-y-4">
@@ -71,7 +71,7 @@ export function GiftForm({ market }: { market: Market }) {
         <AddressFields />
       </section>
 
-      <TermsAgreementField marketingWebsite={market.marketingWebsite} />
+      <TermsAgreementField marketingWebsite={brand.marketingWebsite} />
 
       <RecaptchaPlaceholder />
 

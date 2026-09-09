@@ -7,12 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 A Turborepo monorepo for **v2 only**. It holds the OpenAPI description of `/api/v2`, the applications
 that implement and consume it, and one task graph covering all of them. Nothing here serves `/api/v1`.
 
-`CONTEXT.md` at the root is the project's glossary. Read it before naming anything in the market
-domain — it records, among other things, that the wire's `Market.name` is the country, not the brand.
+`CONTEXT.md` at the root is the project's glossary. Read it before naming anything in domains.
 
 ## Layout
 
-```
+```text
 packages/openapi-v2/   # the OpenAPI 3.1 description of /api/v2 — @workspace/openapi-v2
 packages/api-client/   # typed HTTP client over it — @workspace/api-client
 packages/typescript-config/, packages/eslint-config/

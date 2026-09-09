@@ -1,35 +1,34 @@
 import type { components } from "@workspace/api-client";
 
 /**
- * A market's identity on the wire and in the URL. Lower-case, stable, and not an ISO country code
- * — `uk` is not ISO 3166-1 alpha-2 (`GB` is).
+ * A brand's identity on the wire — membership's own `brands.code`, upper-case.
  *
  * The description is the authority on which codes exist, so this is its generated type rather than
- * a hand-written union: adding a market to `/api/v2` is what makes it routable here.
+ * a hand-written union: adding a brand to `/api/v2` is what makes it reachable here.
+ *
+ * Not what the URL carries. A purchase URL's first segment is a market slug (`au`), mapped onto a
+ * code by `brand-code.ts` — see `../../../CONTEXT.md`.
  */
-export type MarketCode = components["schemas"]["MarketCode"];
+export type BrandCode = components["schemas"]["BrandCode"];
 
 /**
- * One market's public configuration — everything the purchase flows need to render and submit.
+ * One brand's public configuration — everything the purchase flows need to render and submit.
  *
  * Every field is on the description's allowlist. No secret is: not the Stripe secret or webhook
  * secret, the reCAPTCHA secret, the nonce secret, the Keap account key.
  *
- * There is no `name`. The description's `Market.name` is the *country* ("Australia"), while
- * membership's `brands.name` is the *brand* ("MathsOnline") — the same field name for two
- * different things. Binding it to `country` here means no call site can confuse them, and the
- * brand name is a literal in copy, because there is one brand.
- *
  * The wire groups the publishable third-party keys under `stripe` and `google`. That grouping is
  * the payload's, not this application's, so it is flattened at the boundary along with the case.
  */
-export type Market = {
-  code: MarketCode;
-  /** The country this market sells into, as a display string. Not a routing key. */
-  country: string;
+export type Brand = {
+  code: BrandCode;
+  /** The product name the customer sees this brand under. Copy interpolates it — it varies. */
+  name: string;
+  /** The country this brand sells into, as a display string. Not a routing key. */
+  market: string;
   /** ISO 4217 alpha-3. Money is never redenominated here — this only picks the symbol. */
   currency: string;
-  /** The market's marketing site, whose purchase links point back at this application. */
+  /** The brand's marketing site, whose purchase links point back at this application. */
   marketingWebsite: string;
   infoEmail: string;
   feedbackEmail: string;
@@ -38,7 +37,7 @@ export type Market = {
   socialInstagram: string | null;
   /** Publishable half only — this one is meant to reach the browser. */
   stripePublishableKey: string | null;
-  /** Site half only. Domain-restricted per market. */
+  /** Site half only. Domain-restricted per brand. */
   googleRecaptchaSiteKey: string | null;
   googleMapsApiKey: string | null;
   googleTagManagerContainerId: string | null;

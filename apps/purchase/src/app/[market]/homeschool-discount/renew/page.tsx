@@ -1,7 +1,7 @@
 import { HomeschoolBanner } from "@/components/homeschool-banner";
 import { RenewalForm } from "@/components/renewal-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 /**
  * Homeschool renewal. Was `/purchase/homeschool/renew` in membership; nests
@@ -13,13 +13,13 @@ import { requireMarket } from "@/lib/markets/require-market";
 export default async function HomeschoolDiscountRenewPage({
   params,
 }: PageProps<"/[market]/homeschool-discount/renew">) {
-  const { market: code } = await params;
+  const { market: slug } = await params;
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-4">
       <HomeschoolBanner />
       <SecureCheckoutCard>
-        <RenewalForm market={await requireMarket(code)} />
+        <RenewalForm brand={await requireBrand(slug)} />
       </SecureCheckoutCard>
     </div>
   );

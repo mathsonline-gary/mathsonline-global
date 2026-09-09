@@ -1,0 +1,34 @@
+/brands/{brandCode}:
+  parameters:
+    - name: brandCode
+      in: path
+      required: true
+      description: The brand to retrieve.
+      schema:
+        $ref: "../schemas/brand.yaml#/BrandCode"
+
+  get:
+    operationId: showBrand
+    summary: Retrieve a brand
+    description: |
+      Returns the storefront configuration for one brand: display copy, currency, contact points,
+      and the publishable third-party keys the front end initialises with.
+
+      The brand comes from the path, not from the request host, so one origin can read every
+      brand — which is what a country picker or a multi-brand marketing site needs.
+    tags:
+      - Brands
+    security: [] # public
+    responses:
+      "200":
+        description: The brand.
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [data]
+              properties:
+                data:
+                  $ref: "../schemas/brand.yaml#/Brand"
+      "404":
+        $ref: "../responses/errors.yaml#/NotFound"

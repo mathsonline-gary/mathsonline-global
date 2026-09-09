@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 import { CouponRedemptionForm } from "./_components/coupon-redemption-form";
 
@@ -16,7 +16,7 @@ import { CouponRedemptionForm } from "./_components/coupon-redemption-form";
 export default async function SubscribePage({
   params,
 }: PageProps<"/[market]/subscribe">) {
-  const { market: code } = await params;
+  const { market: slug } = await params;
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-8">
@@ -26,7 +26,7 @@ export default async function SubscribePage({
 
       <Card>
         <CardContent>
-          <CouponRedemptionForm market={await requireMarket(code)} />
+          <CouponRedemptionForm brand={await requireBrand(slug)} />
         </CardContent>
       </Card>
     </div>

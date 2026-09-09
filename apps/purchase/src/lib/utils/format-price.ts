@@ -1,7 +1,7 @@
 /**
  * Money as the customer sees it.
  *
- * Money is never redenominated here — the market's currency only decides which
+ * Money is never redenominated here — the brand's currency only decides which
  * symbol is drawn around a figure membership already priced. The locale is pinned rather than taken from the browser, so
  * the server and the client render the same string and hydration matches.
  *

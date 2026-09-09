@@ -5,7 +5,7 @@ import { TermsAgreementField } from "@/components/terms-agreement-field";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import type { Market } from "@/lib/markets/types";
+import type { Brand } from "@/lib/brands/types";
 
 /**
  * The coupon-redemption form, ported from membership's
@@ -17,7 +17,7 @@ import type { Market } from "@/lib/markets/types";
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */
-export function CouponRedemptionForm({ market }: { market: Market }) {
+export function CouponRedemptionForm({ brand }: { brand: Brand }) {
   return (
     <form className="space-y-4">
       <section>
@@ -76,7 +76,7 @@ export function CouponRedemptionForm({ market }: { market: Market }) {
         <AddressFields />
       </section>
 
-      <TermsAgreementField marketingWebsite={market.marketingWebsite} />
+      <TermsAgreementField marketingWebsite={brand.marketingWebsite} />
 
       <RecaptchaPlaceholder />
 

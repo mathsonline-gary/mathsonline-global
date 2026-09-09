@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 /**
  * Order success. Every flow terminates here, which is why it lands alongside
@@ -19,15 +19,15 @@ import { requireMarket } from "@/lib/markets/require-market";
 export default async function SuccessPage({
   params,
 }: PageProps<"/[market]/success/[uuid]">) {
-  const { market: code } = await params;
-  const market = await requireMarket(code);
+  const { market: slug } = await params;
+  const brand = await requireBrand(slug);
 
   return (
     <div className="mx-auto w-full max-w-3xl">
       <Card>
         <CardContent className="space-y-4">
           <h1 className="mb-8 text-center text-4xl font-bold">
-            Thank you for purchasing a MathsOnline membership
+            Thank you for purchasing a {brand.name} membership
           </h1>
 
           <p>
@@ -57,20 +57,20 @@ export default async function SuccessPage({
           />
 
           <p className="mb-8">
-            Pat Murray on behalf of all the team at MathsOnline
+            Pat Murray on behalf of all the team at {brand.name}
           </p>
 
           <div className="border-t border-dashed pt-4">
             <em>
               <strong>The activation email has been sent.</strong> If you do not
               receive the email within ten minutes, please check your spam
-              folder for an email from MathsOnline. If you cannot locate this
+              folder for an email from {brand.name}. If you cannot locate this
               email please contact us at{" "}
               <a
-                href={`mailto:${market.infoEmail}`}
+                href={`mailto:${brand.infoEmail}`}
                 className="text-primary underline underline-offset-4"
               >
-                {market.infoEmail}
+                {brand.infoEmail}
               </a>{" "}
               to request for it to be re-sent to you.
             </em>

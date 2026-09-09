@@ -1,10 +1,10 @@
 import { OrderSidebar } from "@/components/order-sidebar";
 import { PurchaseForm } from "@/components/purchase-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
-import { requireMarket } from "@/lib/markets/require-market";
+import { requireBrand } from "@/lib/brands/require-brand";
 
 /**
- * New order. `/{market}` is the flow itself, not a market landing page:
+ * New order. `/{market}` is the flow itself, not a brand landing page:
  * membership's redundant `/purchase` segment is gone, and nothing neutral sits
  * above it.
  *
@@ -15,19 +15,19 @@ import { requireMarket } from "@/lib/markets/require-market";
  * do yet.
  */
 export default async function NewOrderPage({ params }: PageProps<"/[market]">) {
-  const { market: code } = await params;
-  const market = await requireMarket(code);
+  const { market: slug } = await params;
+  const brand = await requireBrand(slug);
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">
       <section className="space-y-4 lg:col-span-3">
         <SecureCheckoutCard>
-          <PurchaseForm market={market} />
+          <PurchaseForm brand={brand} />
         </SecureCheckoutCard>
       </section>
 
       <div className="lg:col-span-2">
-        <OrderSidebar market={market} />
+        <OrderSidebar brand={brand} />
       </div>
     </div>
   );

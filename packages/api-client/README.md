@@ -11,8 +11,8 @@ const api = createApiClient({
   baseUrl: process.env.API_URL!,
   token: () => session?.accessToken,
 });
-const { data } = await api.GET("/markets/{marketCode}", {
-  params: { path: { marketCode: "au" } },
+const { data } = await api.GET("/brands/{brandCode}", {
+  params: { path: { brandCode: "MOL_AU" } },
 });
 ```
 

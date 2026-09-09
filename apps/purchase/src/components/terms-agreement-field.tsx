@@ -6,7 +6,7 @@ import { Field, FieldLabel } from "@/components/ui/field";
  *
  * Membership links `/termsconditions` relative, because the form is served from
  * the same host as the marketing site. This application is its own host, so the
- * link has to be absolute against the market's marketing website.
+ * link has to be absolute against the brand's marketing website.
  */
 export function TermsAgreementField({
   marketingWebsite,
