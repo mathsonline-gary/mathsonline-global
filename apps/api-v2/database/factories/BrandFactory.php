@@ -32,7 +32,7 @@ class BrandFactory extends Factory
             'info_email' => "info@{$domain}",
             'feedback_email' => "feedback@{$domain}",
             'noreply_email' => "noreply@{$domain}",
-            'tech_email' => "tech@{$domain}",
+            'tech_emails' => ["tech@{$domain}"],
             'sales_emails' => ["sales.1@{$domain}", "sales.2@{$domain}"],
             'support_phone' => fake()->phoneNumber(),
             'social_facebook' => 'https://www.facebook.com/'.fake()->userName(),

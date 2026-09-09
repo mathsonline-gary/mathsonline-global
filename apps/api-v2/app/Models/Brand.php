@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
     'info_email',
     'feedback_email',
     'noreply_email',
-    'tech_email',
+    'tech_emails',
     'sales_emails',
     'support_phone',
     'social_facebook',
@@ -61,6 +61,7 @@ class Brand extends Model
     {
         return [
             'sales_emails' => 'array',
+            'tech_emails' => 'array',
             'testing_plans_enabled' => 'boolean',
             'stripe_test_mode' => 'boolean',
         ];

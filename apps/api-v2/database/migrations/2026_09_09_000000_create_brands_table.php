@@ -37,8 +37,9 @@ return new class extends Migration
                 ->comment('The email address for feedback. e.g., "feedback@mathsonline.com.au"');
             $table->string('noreply_email')
                 ->comment('The email address for noreply. e.g., "noreply@mathsonline.com.au"');
-            $table->string('tech_email')
-                ->comment('The email address for the tech team. e.g., "tech@mathsonline.com.au"');
+            $table->json('tech_emails')
+                ->nullable()
+                ->comment('The email addresses of the tech team. e.g., ["tech@mathsonline.com.au"]');
             $table->json('sales_emails')
                 ->nullable()
                 ->comment('The ordered email addresses of the sales team. The first one owns an enquiry, the rest are copied.');
