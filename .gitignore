@@ -285,7 +285,3 @@ $RECYCLE.BIN/
 
 # pnpm keeps its store inside the repo when the project and $HOME are on different filesystems
 .pnpm-stores
-
-# Postman: collections generated from the description, plus per-user environments.
-# The sync configuration in .postman/ is committed; its output is not.
-/postman
