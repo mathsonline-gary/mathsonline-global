@@ -18,3 +18,5 @@ rules:
   no-unused-components: off
   # Internal API, not published under a licence.
   info-license: off
+  # A localhost entry in `servers` is the point: the docs and mock need a local back end target.
+  no-server-example.com: off

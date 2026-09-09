@@ -13,6 +13,12 @@ servers:
       host:
         default: www.mathsonline.co
         description: Any domain served by this application.
+  - url: http://localhost:{port}/api/v2
+    description: Local development
+    variables:
+      port:
+        default: "8080"
+        description: Port the local back end is served on.
 
 tags:
   - name: Brands
