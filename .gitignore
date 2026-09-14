@@ -284,4 +284,7 @@ $RECYCLE.BIN/
 /packages/openapi-v2/dist
 
 # pnpm keeps its store inside the repo when the project and $HOME are on different filesystems
-.pnpm-stores
+.pnpm-store
+
+# Claude Code worktrees (local scratch checkouts)
+.claude/worktrees/
