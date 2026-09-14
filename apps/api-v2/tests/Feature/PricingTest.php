@@ -567,26 +567,14 @@ test('a valid testing token serves the brand testing plans', function () {
         ->assertJsonPath('data.family.0.code', 'TEST3');
 });
 
-test('a brand with testing plans prices normally when no token is sent', function () {
+test('a testing token that does not verify is ignored', function () {
+    // One case at this level: which tokens verify is TestingTokenTest's, this is the fall-through.
     $brand = brandWithTestingPlans();
 
-    $this->getJson(pricing($brand))
+    $this->getJson(pricing($brand).'?testing_token='.urlencode(TestingToken::generate(-1)))
         ->assertOk()
         ->assertJsonPath('data.single.0.code', 'FULL');
 });
-
-test('a testing token that does not verify is ignored', function (string $token) {
-    $brand = brandWithTestingPlans();
-
-    $this->getJson(pricing($brand).'?testing_token='.urlencode($token))
-        ->assertOk()
-        ->assertJsonPath('data.single.0.code', 'FULL');
-})->with([
-    'garbage' => fn () => 'whatever',
-    'empty' => fn () => '',
-    'expired' => fn () => TestingToken::generate(-1),
-    'tampered' => fn () => TestingToken::generate().'x',
-]);
 
 test('a testing token is ignored for a brand without testing pricings enabled', function () {
     $brand = Brand::factory()->create(['testing_plans_enabled' => false]);
