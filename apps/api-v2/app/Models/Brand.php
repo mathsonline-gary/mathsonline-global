@@ -26,7 +26,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'social_facebook',
     'social_instagram',
     'nonce_secret',
-    'trial_mode',
     'testing_plans_enabled',
     'stripe_publishable_key',
     'stripe_secret_key',
