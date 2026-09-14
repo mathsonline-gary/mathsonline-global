@@ -57,11 +57,12 @@ function billingCaption(pricing: Pricing): string {
   }
 
   const total = count + extraCount;
-  const period = `for ${total} ${total === 1 ? interval : `${interval}s`}`;
+  const period = `${total} ${total === 1 ? interval : `${interval}s`}`;
 
+  // An instalment plan prices one payment, so the payments lead and the period qualifies them.
   return pricing.installmentCount > 0
-    ? `${period}, in ${pricing.installmentCount} payments`
-    : period;
+    ? `${pricing.installmentCount} payments over ${period}`
+    : `for ${period}`;
 }
 
 export function PricingTable({ pricing }: { pricing: Table }) {

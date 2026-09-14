@@ -15,10 +15,18 @@ import { getPricing } from "@/lib/pricing/pricing.api";
  * UI only so far — see `PurchaseForm` for what the form deliberately does not
  * do yet.
  */
-export default async function NewOrderPage({ params }: PageProps<"/[market]">) {
+export default async function NewOrderPage({
+  params,
+  searchParams,
+}: PageProps<"/[market]">) {
   const { market: slug } = await params;
+  const { tr_id: promotionCode } = await searchParams;
   const brand = await requireBrand(slug);
-  const pricing = await getPricing(brand.code);
+  // `tr_id` is membership's name for the promotion code, kept because the marketing links that
+  // carry it are already out there. Anything unknown fails soft into the default pricing.
+  const pricing = await getPricing(brand.code, {
+    promotionCode: typeof promotionCode === "string" ? promotionCode : undefined,
+  });
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">

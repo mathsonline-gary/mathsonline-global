@@ -87,7 +87,7 @@ describe("PricingTable", () => {
     );
 
     expect(
-      screen.getByText("for 14 months, in 4 payments"),
+      screen.getByText("4 payments over 14 months"),
     ).toBeInTheDocument();
   });
 
