@@ -5,6 +5,7 @@ use App\Models\Campaign;
 use App\Models\Plan;
 use App\Models\Promotion;
 use App\Models\RenewalCoupon;
+use App\Support\TestingToken;
 
 /**
  * Create a campaign holding one single-student and one family plan, so it can fill a table.
@@ -28,6 +29,20 @@ function campaignWith(Brand $brand, string $code, array $attributes = [], bool $
 function defaultCampaign(Brand $brand, array $attributes = [], bool $homeschool = false): Campaign
 {
     return campaignWith($brand, Campaign::DEFAULT_CODE, $attributes, $homeschool);
+}
+
+/**
+ * Create a brand whose default campaign fills the table and whose testing plans do too.
+ */
+function brandWithTestingPlans(): Brand
+{
+    $brand = Brand::factory()->create(['testing_plans_enabled' => true]);
+    defaultCampaign($brand, ['code' => 'FULL']);
+
+    Plan::factory()->testing()->create(['brand_id' => $brand->id, 'code' => 'TEST1', 'student_limit' => 1]);
+    Plan::factory()->testing()->create(['brand_id' => $brand->id, 'code' => 'TEST3', 'student_limit' => 5]);
+
+    return $brand;
 }
 
 function pricing(Brand $brand): string
@@ -541,17 +556,29 @@ test('a homeschool request against a campaign with no homeschool pricings falls 
         ->assertJsonPath('data.single.0.code', 'HS_FULL');
 });
 
-test('a testing token is ignored while verification is unimplemented', function () {
-    $brand = Brand::factory()->create(['testing_plans_enabled' => true]);
-    defaultCampaign($brand, ['code' => 'FULL']);
+test('a valid testing token serves the brand testing plans', function () {
+    $brand = brandWithTestingPlans();
 
-    Plan::factory()->testing()->create(['brand_id' => $brand->id, 'code' => 'TEST1', 'student_limit' => 1]);
-    Plan::factory()->testing()->create(['brand_id' => $brand->id, 'code' => 'TEST3', 'student_limit' => 5]);
+    $this->getJson(pricing($brand).'?testing_token='.urlencode(TestingToken::generate()))
+        ->assertOk()
+        ->assertJsonPath('data.promotion_code', null)
+        ->assertJsonPath('data.renewal_coupon_code', null)
+        ->assertJsonPath('data.single.0.code', 'TEST1')
+        ->assertJsonPath('data.family.0.code', 'TEST3');
+});
 
-    $this->getJson(pricing($brand).'?testing_token=whatever')
+test('a testing token that does not verify is ignored', function (string $token) {
+    $brand = brandWithTestingPlans();
+
+    $this->getJson(pricing($brand).'?testing_token='.urlencode($token))
         ->assertOk()
         ->assertJsonPath('data.single.0.code', 'FULL');
-});
+})->with([
+    'garbage' => fn () => 'whatever',
+    'empty' => fn () => '',
+    'expired' => fn () => TestingToken::generate(-1),
+    'tampered' => fn () => TestingToken::generate().'x',
+]);
 
 test('a testing token is ignored for a brand without testing pricings enabled', function () {
     $brand = Brand::factory()->create(['testing_plans_enabled' => false]);
