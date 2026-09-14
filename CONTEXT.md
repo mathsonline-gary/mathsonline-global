@@ -49,3 +49,28 @@ A flow can be unavailable in a brand without the brand being unavailable.
 
 The **trial** is a flow the customer starts without paying. It is named here because it is planned,
 not present: which of its two forms a brand runs is not something `/api/v2` describes yet.
+
+## Pricing
+
+A **pricing** is one priced membership option, as the customer is offered it: an amount, a currency,
+a billing period, and how many students it covers. One pricing is one row in membership's `plans`
+table, and it crosses the wire as `Pricing`.
+
+> The word **plan** means this inside membership and stays there. `/api/v2` says pricing, because
+> what the customer chooses between is prices, and because a `Plan` on the wire would invite the
+> assumption that membership's columns are the contract.
+
+A **pricing table** is every pricing one brand offers, grouped the way the customer reads it: two
+groups, `single` and `family`, each an ordered list of at least one pricing. The order is the
+server's decision and the client's instruction — it is what the grid renders in, and it is not
+recoverable from any one field of a pricing.
+
+A pricing is **single** when it covers one student and **family** when it covers more than one. That
+is the whole rule, and it is `student_limit`, never the pricing's code: membership's `M3` is a family
+pricing covering five students, so neither the letter nor the digit says anything about the group.
+
+A **promotion** is a code anyone may use that prices a table more cheaply, and a **renewal coupon**
+is a code issued to one customer for one renewal. Both cross the wire only as codes, and both are
+optional: a table that neither priced is the brand's own pricing and is not a lesser answer. A code
+that does not apply — unknown, expired, spent, another brand's — is never an error. The customer is
+always shown a price; what a client learns is which code applied, not which code failed.

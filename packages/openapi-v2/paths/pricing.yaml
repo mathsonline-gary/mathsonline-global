@@ -1,0 +1,96 @@
+/brands/{brandCode}/pricing:
+  parameters:
+    - name: brandCode
+      in: path
+      required: true
+      description: The brand whose pricing to retrieve.
+      schema:
+        $ref: "../schemas/brand.yaml#/BrandCode"
+
+  get:
+    operationId: showPricing
+    summary: Retrieve a brand's pricing
+    description: |
+      Returns every pricing the brand offers, grouped `single` and `family`, in the order a client
+      renders them.
+
+      The shape never varies. Both groups are always present and never empty, whatever the query —
+      the parameters decide *which* pricings fill the table, never whether there is one. A client
+      renders the same grid every time and does not branch on the query it sent.
+
+      Which pricings those are is resolved in this order, the first match winning: the campaign
+      behind `renewal_coupon_code`, then the campaign behind `promotion_code`, then the brand's
+      default campaign. `homeschool` then picks the homeschool pricings out of whichever campaign
+      won, rather than selecting a campaign of its own. `testing_token` overrides all of it, and
+      only for a brand with testing pricings enabled.
+
+      **Every code parameter fails soft.** Unknown, expired, spent, or belonging to another brand
+      are all the same answer: the brand's default pricing, with the corresponding field in the
+      response `null`. Nothing here is a validation error, because the customer is always shown a
+      price — so a client reads `promotion_code` and `renewal_coupon_code` in the response to find
+      out what applied, and tells the customer their code did not if it comes back absent.
+    tags:
+      - Pricing
+    security: [] # public
+    parameters:
+      - name: promotion_code
+        in: query
+        required: false
+        description: |
+          A promotion to price the table with. Membership's `promotions.code`. Ignored rather than
+          rejected when it does not apply — see the response's `promotion_code`.
+        schema:
+          type: string
+        examples:
+          default:
+            value: "XMAS"
+      - name: renewal_coupon_code
+        in: query
+        required: false
+        description: |
+          A renewal coupon issued to one customer, which prices the table for their renewal. Takes
+          precedence over `promotion_code`. Ignored rather than rejected when it does not apply.
+        schema:
+          type: string
+      - name: homeschool
+        in: query
+        required: false
+        description: |
+          Ask for the homeschool pricings instead of the standard ones. Homeschool is a separate set
+          of pricings within the same campaign, not a discount applied to the standard ones, which
+          is why it is a parameter here rather than a code.
+        schema:
+          type: boolean
+          default: false
+      - name: testing_token
+        in: query
+        required: false
+        description: |
+          Ask for the brand's testing pricings — token amounts used to exercise a real payment
+          without a real charge. Honoured only for a brand that has testing pricings enabled, and
+          ignored rather than rejected otherwise, so the token being wrong is never the reason a
+          page fails to price.
+        schema:
+          type: string
+      - name: nonce_code
+        in: query
+        required: false
+        description: |
+          Accompanies `promotion_code` for a promotion that only applies to a customer holding a
+          signed one-time code. Without it such a promotion does not apply; with it, a promotion
+          that needs no nonce is unaffected.
+        schema:
+          type: string
+    responses:
+      "200":
+        description: The brand's pricing.
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [data]
+              properties:
+                data:
+                  $ref: "../schemas/pricing.yaml#/PricingTable"
+      "404":
+        $ref: "../responses/errors.yaml#/NotFound"

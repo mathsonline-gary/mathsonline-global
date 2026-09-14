@@ -40,11 +40,13 @@ packages/openapi-v2/
 ├── turbo.json             # carries "build before dependents type-check" to the graph
 ├── openapi.yaml           # root description — index of every path and component
 ├── paths/
-│   └── brands.yaml        # every path item under /brands
+│   ├── brands.yaml        # every path item under /brands
+│   └── pricing.yaml       # /brands/{brandCode}/pricing
 ├── schemas/
 │   ├── brand.yaml         # Brand, BrandCode
 │   ├── error.yaml         # Error, ValidationError
-│   └── pagination.yaml    # PaginationLinks, PaginationMeta, PaginationLink
+│   ├── pagination.yaml    # PaginationLinks, PaginationMeta, PaginationLink
+│   └── pricing.yaml       # Pricing, PricingTable
 ├── responses/
 │   └── errors.yaml        # 401, 403, 404, 405, 422, 429, 500
 └── dist/                  # generated, gitignored, never edited
@@ -118,17 +120,22 @@ Nothing here is a substitute for running against the real Laravel once it exists
 
 ## Conventions
 
-| Item                            | Rule                                                                                             | Example                                         |
-| ------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- |
-| Path file                       | one per resource — the first path segment                                                        | `/brands/*` → `paths/brands.yaml`               |
-| Path file keys                  | the full path strings, exactly as `paths` spells them                                            | `/brands/{brandCode}:`                          |
-| Root `$ref` to a path item      | JSON Pointer into that file, `/` escaped as `~1`, directly under the same URL written as the key | `'./paths/brands.yaml#/~1brands~1{brandCode}'`  |
-| Component file, many components | lower-case resource or group name, components as top-level keys                                  | `schemas/brand.yaml` → `#/Brand`, `#/BrandCode` |
-| Component file, one component   | PascalCase, filename = component name                                                            | (none yet)                                      |
-| Component directory             | mirrors the OpenAPI key exactly                                                                  | `responses/`, not `error-responses/`            |
+| Item                            | Rule                                                                                               | Example                                                                       |
+| ------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| Path file                       | one per resource: the first path segment for a top-level resource, its own name for a sub-resource | `/brands/*` → `paths/brands.yaml`, `/brands/*/pricing` → `paths/pricing.yaml` |
+| Path file keys                  | the full path strings, exactly as `paths` spells them                                              | `/brands/{brandCode}:`                                                        |
+| Root `$ref` to a path item      | JSON Pointer into that file, `/` escaped as `~1`, directly under the same URL written as the key   | `'./paths/brands.yaml#/~1brands~1{brandCode}'`                                |
+| Component file, many components | lower-case resource or group name, components as top-level keys                                    | `schemas/brand.yaml` → `#/Brand`, `#/BrandCode`                               |
+| Component file, one component   | PascalCase, filename = component name                                                              | (none yet)                                                                    |
+| Component directory             | mirrors the OpenAPI key exactly                                                                    | `responses/`, not `error-responses/`                                          |
 
 - **`openapi.yaml` registers every component**, not just the widely-used ones: one file that lists
   what exists and where it lives.
+- **A sub-resource gets its own path file**, named after the sub-resource rather than the segment it
+  hangs off: `/brands/{brandCode}/pricing` is described in `paths/pricing.yaml`, not in
+  `paths/brands.yaml`. A brand's pricing is its own resource with its own tag, and folding every
+  sub-resource into the file named after the first segment would grow one file per top-level noun.
+  Finding a path item still means reading the `$ref` in `openapi.yaml`, which names the file.
 - **A path item is keyed by URL, not by verb.** All methods for one URL share one keyed block and
   its `parameters`, which is why the keys are path strings and not Laravel-ish labels (`show`,
   `index`) — those name operations, and would be a lie the moment a second method appears on the

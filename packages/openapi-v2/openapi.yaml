@@ -23,12 +23,16 @@ servers:
 tags:
   - name: Brands
     description: Storefront configuration per brand, addressed by brand code.
+  - name: Pricing
+    description: What a brand's memberships cost, grouped as the customer is offered them.
 
 # One file per resource; the pointer after `#` is the path string with `/` escaped as `~1`, so the
 # key above each `$ref` and the pointer inside it spell the same URL.
 paths:
   /brands/{brandCode}:
     $ref: "./paths/brands.yaml#/~1brands~1{brandCode}"
+  /brands/{brandCode}/pricing:
+    $ref: "./paths/pricing.yaml#/~1brands~1{brandCode}~1pricing"
 
 components:
   responses:
@@ -62,3 +66,7 @@ components:
       $ref: "./schemas/brand.yaml#/Brand"
     BrandCode:
       $ref: "./schemas/brand.yaml#/BrandCode"
+    Pricing:
+      $ref: "./schemas/pricing.yaml#/Pricing"
+    PricingTable:
+      $ref: "./schemas/pricing.yaml#/PricingTable"
