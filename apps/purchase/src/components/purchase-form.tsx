@@ -1,4 +1,4 @@
-import { PlanSelector } from "@/components/plan-selector";
+import { PricingTable } from "@/components/pricing-table";
 import { RecaptchaPlaceholder } from "@/components/recaptcha-placeholder";
 import { StepHeading } from "@/components/step-heading";
 import { TermsAgreementField } from "@/components/terms-agreement-field";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { Brand } from "@/lib/brands/types";
+import type { PricingTable as Table } from "@/lib/pricing/types";
 
 /**
  * The new-order form, ported from membership's `orders/create/new.blade.php`:
@@ -23,12 +24,18 @@ import type { Brand } from "@/lib/brands/types";
  * fields are uncontrolled, and the `react-hook-form` + `zod` schema, the
  * reCAPTCHA widget and the POST to membership all land with the flow's logic.
  */
-export function PurchaseForm({ brand }: { brand: Brand }) {
+export function PurchaseForm({
+  brand,
+  pricing,
+}: {
+  brand: Brand;
+  pricing: Table;
+}) {
   return (
     <form className="space-y-4">
       <section>
         <StepHeading step={1}>Choose Membership</StepHeading>
-        <PlanSelector currency={brand.currency} />
+        <PricingTable pricing={pricing} />
       </section>
 
       <section>

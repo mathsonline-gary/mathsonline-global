@@ -1,5 +1,5 @@
 import { AddressFields } from "@/components/address-fields";
-import { PlanSelector } from "@/components/plan-selector";
+import { PricingTable } from "@/components/pricing-table";
 import { RecaptchaPlaceholder } from "@/components/recaptcha-placeholder";
 import { StepHeading } from "@/components/step-heading";
 import { TermsAgreementField } from "@/components/terms-agreement-field";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { Brand } from "@/lib/brands/types";
+import type { PricingTable as Table } from "@/lib/pricing/types";
 
 /**
  * The gift form, ported from membership's `orders/create/gift.blade.php`, and
@@ -22,12 +23,12 @@ import type { Brand } from "@/lib/brands/types";
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */
-export function GiftForm({ brand }: { brand: Brand }) {
+export function GiftForm({ brand, pricing }: { brand: Brand; pricing: Table }) {
   return (
     <form className="space-y-4">
       <section>
         <StepHeading step={1}>Choose Membership</StepHeading>
-        <PlanSelector currency={brand.currency} />
+        <PricingTable pricing={pricing} />
       </section>
 
       <section className="space-y-4">

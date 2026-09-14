@@ -8,8 +8,8 @@
  * Whole amounts lose their `.00`, as they do in membership's
  * `str_replace('.00', '', …)`.
  *
- * The only amounts on these pages are placeholders today; this moves into a
- * real pricing module when the plans read lands.
+ * Currency is the amount's own, not the brand's — a pricing carries its own and
+ * the brand's is only a default.
  */
 export function formatPrice(amount: number, currency: string): string {
   return new Intl.NumberFormat("en", {

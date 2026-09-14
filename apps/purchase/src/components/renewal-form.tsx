@@ -1,4 +1,4 @@
-import { PlanSelector } from "@/components/plan-selector";
+import { PricingTable } from "@/components/pricing-table";
 import { RecaptchaPlaceholder } from "@/components/recaptcha-placeholder";
 import { StepHeading } from "@/components/step-heading";
 import { TermsAgreementField } from "@/components/terms-agreement-field";
@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import type { Brand } from "@/lib/brands/types";
+import type { PricingTable as Table } from "@/lib/pricing/types";
 
 /**
  * The renewal form, ported from membership's `orders/create/renewal.blade.php`,
@@ -19,7 +20,13 @@ import type { Brand } from "@/lib/brands/types";
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */
-export function RenewalForm({ brand }: { brand: Brand }) {
+export function RenewalForm({
+  brand,
+  pricing,
+}: {
+  brand: Brand;
+  pricing: Table;
+}) {
   return (
     <form className="space-y-4">
       <section>
@@ -33,7 +40,7 @@ export function RenewalForm({ brand }: { brand: Brand }) {
 
       <section>
         <StepHeading step={2}>Choose Membership</StepHeading>
-        <PlanSelector currency={brand.currency} />
+        <PricingTable pricing={pricing} />
       </section>
 
       <TermsAgreementField marketingWebsite={brand.marketingWebsite} />

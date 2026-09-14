@@ -2,6 +2,7 @@ import { OrderSidebar } from "@/components/order-sidebar";
 import { PurchaseForm } from "@/components/purchase-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
 import { requireBrand } from "@/lib/brands/require-brand";
+import { getPricing } from "@/lib/pricing/pricing.api";
 
 /**
  * New order. `/{market}` is the flow itself, not a brand landing page:
@@ -17,12 +18,13 @@ import { requireBrand } from "@/lib/brands/require-brand";
 export default async function NewOrderPage({ params }: PageProps<"/[market]">) {
   const { market: slug } = await params;
   const brand = await requireBrand(slug);
+  const pricing = await getPricing(brand.code);
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">
       <section className="space-y-4 lg:col-span-3">
         <SecureCheckoutCard>
-          <PurchaseForm brand={brand} />
+          <PurchaseForm brand={brand} pricing={pricing} />
         </SecureCheckoutCard>
       </section>
 
