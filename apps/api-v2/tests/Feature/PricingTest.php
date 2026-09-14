@@ -567,6 +567,14 @@ test('a valid testing token serves the brand testing plans', function () {
         ->assertJsonPath('data.family.0.code', 'TEST3');
 });
 
+test('a brand with testing plans prices normally when no token is sent', function () {
+    $brand = brandWithTestingPlans();
+
+    $this->getJson(pricing($brand))
+        ->assertOk()
+        ->assertJsonPath('data.single.0.code', 'FULL');
+});
+
 test('a testing token that does not verify is ignored', function (string $token) {
     $brand = brandWithTestingPlans();
 
