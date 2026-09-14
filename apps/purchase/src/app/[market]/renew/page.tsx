@@ -1,6 +1,7 @@
 import { RenewalForm } from "@/components/renewal-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
 import { requireBrand } from "@/lib/brands/require-brand";
+import { getPricing } from "@/lib/pricing/pricing.api";
 
 /**
  * Renewal. No sidebar and a narrower column than the new order — membership
@@ -13,11 +14,13 @@ export default async function RenewPage({
   params,
 }: PageProps<"/[market]/renew">) {
   const { market: slug } = await params;
+  const brand = await requireBrand(slug);
+  const pricing = await getPricing(brand.code);
 
   return (
     <div className="mx-auto w-full max-w-3xl">
       <SecureCheckoutCard>
-        <RenewalForm brand={await requireBrand(slug)} />
+        <RenewalForm brand={brand} pricing={pricing} />
       </SecureCheckoutCard>
     </div>
   );

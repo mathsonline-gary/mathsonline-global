@@ -1,0 +1,181 @@
+Pricing:
+  type: object
+  description: |
+    One priced membership option, as the customer is offered it — one row of membership's `plans`.
+
+    Money is a decimal amount in `currency`, never minor units, because that is how membership
+    stores it. A client formats it and never redenominates it.
+  required:
+    [
+      code,
+      price,
+      price_original,
+      price_saved,
+      currency,
+      recurring,
+      student_limit,
+      billing_period,
+      installment_count,
+    ]
+  properties:
+    code:
+      type: string
+      maxLength: 15
+      description: |
+        Identifies this pricing. Membership's `plans.code`, taken verbatim — it is what a checkout
+        sends back to say which option the customer chose. Opaque: never parse it. `M3` is a family
+        pricing for five students, so neither the letter nor the digit is a fact about the pricing.
+      examples: ["M1"]
+    price:
+      type: number
+      minimum: 0
+      description: What the customer is charged, per billing period when `recurring`.
+      examples: [19.97]
+    price_original:
+      type: number
+      minimum: 0
+      description: |
+        The undiscounted price. Equal to `price` when nothing is discounted, so a client shows it
+        struck through only when it is greater.
+      examples: [19.97]
+    price_saved:
+      type: number
+      minimum: 0
+      description: |
+        What the customer saves, `0` when nothing is. Membership stores this rather than deriving
+        it, so it is not always `price_original - price` and must not be recomputed from them.
+      examples: [0]
+    currency:
+      type: string
+      minLength: 3
+      maxLength: 3
+      description: |
+        ISO 4217 alpha-3, upper-case. This pricing's own currency — `Brand.currency` is only the
+        brand's default, and a pricing carries its own.
+      examples: ["AUD"]
+    recurring:
+      type: boolean
+      description: |
+        Whether `price` is charged every billing period until cancelled. `false` is a one-off
+        charge covering `billing_period`.
+      examples: [true]
+    student_limit:
+      type: integer
+      minimum: 1
+      description: |
+        How many students the membership covers. `1` is a single membership and anything greater is
+        a family one — this is the only thing that decides which group of `PricingTable` a pricing
+        lands in.
+      examples: [1]
+    billing_period:
+      type: object
+      description: How long one charge covers.
+      required: [interval, count, extra_count]
+      properties:
+        interval:
+          type: string
+          enum: [day, week, month, year]
+          examples: ["month"]
+        count:
+          type: integer
+          minimum: 1
+          description: How many intervals the customer pays for.
+          examples: [1]
+        extra_count:
+          type: integer
+          minimum: 0
+          description: |
+            Bonus intervals granted free on top of `count`, `0` for most pricings. The membership
+            runs for `count + extra_count` intervals.
+          examples: [0]
+    installment_count:
+      type: integer
+      minimum: 0
+      description: |
+        How many payments the price is split into, `0` when it is paid in one. An installment
+        pricing is not `recurring`: the payments end, the membership does not renew.
+      examples: [0]
+
+PricingTable:
+  type: object
+  description: |
+    Every pricing a brand offers, grouped as the customer sees it.
+
+    Both groups are always present and never empty, and the shape does not change with the query —
+    the query only decides which pricings fill it.
+
+    **Array order is render order.** The server decides it and a client renders it in that order,
+    because the ordering that matters — period length first, then whether the price is paid in
+    installments — is not derivable from any single field, and two pricings can differ only by
+    `installment_count`.
+
+    `promotion_code` and `renewal_coupon_code` echo what actually took effect. A code that is
+    unknown, expired, already used or another brand's comes back as `null` alongside the brand's
+    default pricing, so a client tells the customer their code did not apply by finding it absent
+    here rather than by reading an error.
+  required: [promotion_code, renewal_coupon_code, single, family]
+  properties:
+    promotion_code:
+      type: [string, "null"]
+      description: The promotion that priced this table, or `null` if none did.
+    renewal_coupon_code:
+      type: [string, "null"]
+      description: The renewal coupon that priced this table, or `null` if none did.
+    single:
+      type: array
+      minItems: 1
+      description: Pricings covering one student, in render order.
+      items:
+        $ref: "./pricing.yaml#/Pricing"
+    family:
+      type: array
+      minItems: 1
+      description: Pricings covering more than one student, in render order.
+      items:
+        $ref: "./pricing.yaml#/Pricing"
+  # A whole-object example, unlike the per-property examples elsewhere in this directory. The mock
+  # replays whichever example sits closest to the schema being rendered, and per-property ones would
+  # give both groups one item each — the same item, since `single` and `family` share `Pricing`. A
+  # table of one identical pricing per group cannot be laid out, and laying the grid out is what the
+  # mock is for. Figures are membership's AUD defaults: a year costs twelve months less a discount.
+  examples:
+    - promotion_code: null
+      renewal_coupon_code: null
+      single:
+        - code: "M1"
+          price: 19.97
+          price_original: 19.97
+          price_saved: 0
+          currency: "AUD"
+          recurring: true
+          student_limit: 1
+          billing_period: { interval: "month", count: 1, extra_count: 0 }
+          installment_count: 0
+        - code: "Y1"
+          price: 197
+          price_original: 239.64
+          price_saved: 42.64
+          currency: "AUD"
+          recurring: false
+          student_limit: 1
+          billing_period: { interval: "month", count: 12, extra_count: 0 }
+          installment_count: 0
+      family:
+        - code: "M3"
+          price: 29.97
+          price_original: 29.97
+          price_saved: 0
+          currency: "AUD"
+          recurring: true
+          student_limit: 5
+          billing_period: { interval: "month", count: 1, extra_count: 0 }
+          installment_count: 0
+        - code: "Y3"
+          price: 297
+          price_original: 359.64
+          price_saved: 62.64
+          currency: "AUD"
+          recurring: false
+          student_limit: 5
+          billing_period: { interval: "month", count: 12, extra_count: 0 }
+          installment_count: 0
