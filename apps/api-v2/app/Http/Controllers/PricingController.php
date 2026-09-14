@@ -32,7 +32,7 @@ class PricingController extends Controller
         // A testing token overrides everything, and only for a brand with testing plans enabled.
         // Testing plans are brand-scoped rather than campaign-scoped, so no promotion or coupon
         // applies to them, and membership's testing branch ignores homeschool too.
-        if ($brand->testing_plans_enabled && TestingToken::verify($brand, $this->queryString($request, 'testing_token'))) {
+        if ($brand->testing_plans_enabled && TestingToken::verify($this->queryString($request, 'testing_token'))) {
             $testing = $this->group($brand->plans()->where('type', PlanType::Testing)->get());
 
             if ($testing !== null) {

@@ -2,26 +2,47 @@
 
 namespace App\Support;
 
-use App\Models\Brand;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 
 /**
  * A computed token asking for a brand's testing plans.
+ *
+ * The token is the application key encrypting `{"exp": <unix timestamp>}` — no new column, no
+ * per-brand secret, and forging one means forging `APP_KEY`. It is not brand-scoped: which brands
+ * honour a token at all is the `testing_plans_enabled` flag, checked by the caller.
  */
 final class TestingToken
 {
     /**
-     * Verify a testing token for a brand.
-     *
-     * Unimplemented. Membership has no token at all — `?testing=1` was the whole check, which is
-     * not something a public endpoint can honour — so there is nothing to port and the scheme is
-     * undecided. Until it is, no token verifies and testing plans are never served, which the
-     * description already permits: a token that does not apply is ignored, never rejected.
-     *
-     * The brand is the parameter rather than a secret, so an implementation can reach a column
-     * without changing this signature.
+     * Mint a testing token valid for the given number of seconds.
      */
-    public static function verify(Brand $brand, ?string $token): bool
+    public static function generate(int $ttlSeconds = 3600): string
     {
-        return false;
+        return Crypt::encryptString((string) json_encode(['exp' => time() + $ttlSeconds]));
+    }
+
+    /**
+     * Verify a testing token.
+     *
+     * Nothing a caller sends is a reason to fail: a token that does not decrypt, does not decode,
+     * carries no expiry or has passed it is simply not a token, which the description already
+     * permits — a token that does not apply is ignored, never rejected.
+     */
+    public static function verify(?string $token): bool
+    {
+        if ($token === null || $token === '') {
+            return false;
+        }
+
+        try {
+            $payload = json_decode(Crypt::decryptString($token), true);
+        } catch (DecryptException) {
+            return false;
+        }
+
+        return is_array($payload)
+            && is_int($payload['exp'] ?? null)
+            && time() <= $payload['exp'];
     }
 }
