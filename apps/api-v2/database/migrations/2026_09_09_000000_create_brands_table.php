@@ -59,9 +59,6 @@ return new class extends Migration
                 ->comment('The secret for the nonce code verification.');
 
             // Purchase settings
-            $table->tinyInteger('trial_mode')
-                ->default(1)
-                ->comment('The mode for the trial. 1 = simple guest, 2 = Stripe-driven');
             $table->boolean('testing_plans_enabled')
                 ->default(false)
                 ->comment('Whether the testing plans are enabled in the brand. This can be true only when doing testing.');
