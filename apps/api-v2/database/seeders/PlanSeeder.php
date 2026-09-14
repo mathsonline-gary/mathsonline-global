@@ -51,6 +51,26 @@ class PlanSeeder extends Seeder
     ];
 
     /**
+     * The promotion code that reaches each campaign: campaign code => promotion code.
+     *
+     * A campaign is not reachable by name — showPricing resolves a promotion, so a campaign with
+     * no promotion pointing at it can only be the brand's default.
+     *
+     * @var array<string, string>
+     */
+    private const PROMOTIONS = [
+        // The code the description's own example uses.
+        '50DISC' => 'XMAS',
+        // Membership's instalment link, '?tr_id=INST4X3'.
+        'INSTALMENT4X3' => 'INST4X3',
+        // The rest reach their campaign under its own name.
+        '10DISC' => '10DISC',
+        '20DISC' => '20DISC',
+        '12PLUS6' => '12PLUS6',
+        '12PLUS3' => '12PLUS3',
+    ];
+
+    /**
      * Seed the campaigns, plans and promotions behind showPricing.
      *
      * Every row is membership's, id included, so the two databases agree on what a campaign or a
@@ -69,12 +89,11 @@ class PlanSeeder extends Seeder
         foreach (self::CAMPAIGNS as $id => [$brandId, $code]) {
             Campaign::forceCreate(['id' => $id, 'brand_id' => $brandId, 'code' => $code]);
 
-            if ($code === '50DISC') {
+            if (isset(self::PROMOTIONS[$code])) {
                 Promotion::create([
                     'brand_id' => $brandId,
                     'campaign_id' => $id,
-                    // The code the description's own example uses.
-                    'code' => 'XMAS',
+                    'code' => self::PROMOTIONS[$code],
                     'expires_at' => null,
                 ]);
             }
