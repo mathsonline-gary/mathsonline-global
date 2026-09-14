@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Brand;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 
@@ -24,16 +23,13 @@ final class TestingToken
     }
 
     /**
-     * Verify a testing token for a brand.
+     * Verify a testing token.
      *
      * Nothing a caller sends is a reason to fail: a token that does not decrypt, does not decode,
      * carries no expiry or has passed it is simply not a token, which the description already
      * permits — a token that does not apply is ignored, never rejected.
-     *
-     * The brand is unused. It stays in the signature so scoping a token to one brand later is a
-     * change to this method rather than to every call site.
      */
-    public static function verify(Brand $brand, ?string $token): bool
+    public static function verify(?string $token): bool
     {
         if ($token === null || $token === '') {
             return false;

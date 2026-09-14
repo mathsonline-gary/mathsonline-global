@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Brand;
 use App\Support\TestingToken;
 use Illuminate\Support\Facades\Artisan;
 
@@ -15,13 +14,13 @@ function mintedToken(?int $ttl = null): string
 }
 
 test('the command prints a usable token, with the default ttl and with one given', function () {
-    expect(TestingToken::verify(new Brand, mintedToken()))->toBeTrue();
-    expect(TestingToken::verify(new Brand, mintedToken(60)))->toBeTrue();
+    expect(TestingToken::verify(mintedToken()))->toBeTrue();
+    expect(TestingToken::verify(mintedToken(60)))->toBeTrue();
 });
 
 test('the command runs in production', function () {
     // Production is the environment worth minting a token for, so there is deliberately no guard.
     $this->app->detectEnvironment(fn () => 'production');
 
-    expect(TestingToken::verify(new Brand, mintedToken()))->toBeTrue();
+    expect(TestingToken::verify(mintedToken()))->toBeTrue();
 });

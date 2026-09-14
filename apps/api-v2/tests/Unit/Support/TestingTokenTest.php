@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Brand;
 use App\Support\TestingToken;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\Crypt;
@@ -11,14 +10,6 @@ use Tests\TestCase;
 uses(TestCase::class);
 
 /**
- * The brand argument verification ignores — a token is not scoped to one.
- */
-function anyBrand(): Brand
-{
-    return new Brand;
-}
-
-/**
  * Encrypt an arbitrary payload the way a token is encrypted, to forge a shape verification rejects.
  */
 function tokenCarrying(string $payload): string
@@ -27,7 +18,7 @@ function tokenCarrying(string $payload): string
 }
 
 test('a freshly generated token verifies', function (int $ttl) {
-    expect(TestingToken::verify(anyBrand(), TestingToken::generate($ttl)))->toBeTrue();
+    expect(TestingToken::verify(TestingToken::generate($ttl)))->toBeTrue();
 })->with([
     'the default hour' => 3600,
     'a minute' => 60,
@@ -36,14 +27,14 @@ test('a freshly generated token verifies', function (int $ttl) {
 ]);
 
 test('a token stops verifying once its expiry has passed', function (int $ttl) {
-    expect(TestingToken::verify(anyBrand(), TestingToken::generate($ttl)))->toBeFalse();
+    expect(TestingToken::verify(TestingToken::generate($ttl)))->toBeFalse();
 })->with([
     'expired a second ago' => -1,
     'expired an hour ago' => -3600,
 ]);
 
 test('anything that is not a token verifies false rather than throwing', function (?string $token) {
-    expect(TestingToken::verify(anyBrand(), $token))->toBeFalse();
+    expect(TestingToken::verify($token))->toBeFalse();
 })->with([
     'nothing at all' => fn () => null,
     'an empty string' => fn () => '',
