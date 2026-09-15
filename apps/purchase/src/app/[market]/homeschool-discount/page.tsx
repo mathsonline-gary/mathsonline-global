@@ -3,6 +3,7 @@ import { PurchaseForm } from "@/components/purchase-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
 import { requireBrand } from "@/lib/brands/require-brand";
 import { getPricing } from "@/lib/pricing/pricing.api";
+import { readSearchParam } from "@/lib/utils/read-search-param";
 
 /**
  * Homeschool new order. Renamed off membership's `homeschool50` leaf — the `50`
@@ -18,8 +19,10 @@ import { getPricing } from "@/lib/pricing/pricing.api";
  */
 export default async function HomeschoolDiscountPage({
   params,
+  searchParams,
 }: PageProps<"/[market]/homeschool-discount">) {
   const { market: slug } = await params;
+  const { plan_id: preselectedPricingCode } = await searchParams;
   const brand = await requireBrand(slug);
   const pricing = await getPricing(brand.code, { homeschool: true });
 
@@ -27,7 +30,11 @@ export default async function HomeschoolDiscountPage({
     <div className="grid gap-6 lg:grid-cols-5">
       <section className="space-y-4 lg:col-span-3">
         <SecureCheckoutCard>
-          <PurchaseForm brand={brand} pricing={pricing} />
+          <PurchaseForm
+            brand={brand}
+            pricing={pricing}
+            preselectedPricingCode={readSearchParam(preselectedPricingCode)}
+          />
         </SecureCheckoutCard>
       </section>
 

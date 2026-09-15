@@ -23,12 +23,23 @@ import type { PricingTable as Table } from "@/lib/pricing/types";
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */
-export function GiftForm({ brand, pricing }: { brand: Brand; pricing: Table }) {
+export function GiftForm({
+  brand,
+  pricing,
+  preselectedPricingCode,
+}: {
+  brand: Brand;
+  pricing: Table;
+  preselectedPricingCode?: string;
+}) {
   return (
     <form className="space-y-4">
       <section>
         <StepHeading step={1}>Choose Membership</StepHeading>
-        <PricingTable pricing={pricing} />
+        <PricingTable
+          pricing={pricing}
+          preselectedPricingCode={preselectedPricingCode}
+        />
       </section>
 
       <section className="space-y-4">

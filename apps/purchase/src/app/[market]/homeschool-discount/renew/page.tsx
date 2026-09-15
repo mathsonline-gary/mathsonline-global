@@ -3,6 +3,7 @@ import { RenewalForm } from "@/components/renewal-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
 import { requireBrand } from "@/lib/brands/require-brand";
 import { getPricing } from "@/lib/pricing/pricing.api";
+import { readSearchParam } from "@/lib/utils/read-search-param";
 
 /**
  * Homeschool renewal. Was `/purchase/homeschool/renew` in membership; nests
@@ -13,8 +14,10 @@ import { getPricing } from "@/lib/pricing/pricing.api";
  */
 export default async function HomeschoolDiscountRenewPage({
   params,
+  searchParams,
 }: PageProps<"/[market]/homeschool-discount/renew">) {
   const { market: slug } = await params;
+  const { plan_id: preselectedPricingCode } = await searchParams;
   const brand = await requireBrand(slug);
   const pricing = await getPricing(brand.code, { homeschool: true });
 
@@ -22,7 +25,11 @@ export default async function HomeschoolDiscountRenewPage({
     <div className="mx-auto w-full max-w-3xl space-y-4">
       <HomeschoolBanner />
       <SecureCheckoutCard>
-        <RenewalForm brand={brand} pricing={pricing} />
+        <RenewalForm
+          brand={brand}
+          pricing={pricing}
+          preselectedPricingCode={readSearchParam(preselectedPricingCode)}
+        />
       </SecureCheckoutCard>
     </div>
   );
