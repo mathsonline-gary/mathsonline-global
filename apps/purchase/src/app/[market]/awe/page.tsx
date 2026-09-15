@@ -3,6 +3,7 @@ import { PurchaseForm } from "@/components/purchase-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
 import { requireBrand } from "@/lib/brands/require-brand";
 import { getPricing } from "@/lib/pricing/pricing.api";
+import { readSearchParam } from "@/lib/utils/read-search-param";
 
 /**
  * AWE order. Membership serves this from the same blade as the new order behind
@@ -11,8 +12,12 @@ import { getPricing } from "@/lib/pricing/pricing.api";
  *
  * UI only — see `PurchaseForm`.
  */
-export default async function AwePage({ params }: PageProps<"/[market]/awe">) {
+export default async function AwePage({
+  params,
+  searchParams,
+}: PageProps<"/[market]/awe">) {
   const { market: slug } = await params;
+  const { plan_id: preselectedPricingCode } = await searchParams;
   const brand = await requireBrand(slug);
   const pricing = await getPricing(brand.code);
 
@@ -20,7 +25,11 @@ export default async function AwePage({ params }: PageProps<"/[market]/awe">) {
     <div className="grid gap-6 lg:grid-cols-5">
       <section className="space-y-4 lg:col-span-3">
         <SecureCheckoutCard>
-          <PurchaseForm brand={brand} pricing={pricing} />
+          <PurchaseForm
+            brand={brand}
+            pricing={pricing}
+            preselectedPricingCode={readSearchParam(preselectedPricingCode)}
+          />
         </SecureCheckoutCard>
       </section>
 

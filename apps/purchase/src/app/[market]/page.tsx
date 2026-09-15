@@ -3,6 +3,7 @@ import { PurchaseForm } from "@/components/purchase-form";
 import { SecureCheckoutCard } from "@/components/secure-checkout-card";
 import { requireBrand } from "@/lib/brands/require-brand";
 import { getPricing } from "@/lib/pricing/pricing.api";
+import { readSearchParam } from "@/lib/utils/read-search-param";
 
 /**
  * New order. `/{market}` is the flow itself, not a brand landing page:
@@ -20,19 +21,24 @@ export default async function NewOrderPage({
   searchParams,
 }: PageProps<"/[market]">) {
   const { market: slug } = await params;
-  const { tr_id: promotionCode } = await searchParams;
+  const { tr_id: promotionCode, plan_id: preselectedPricingCode } =
+    await searchParams;
   const brand = await requireBrand(slug);
   // `tr_id` is membership's name for the promotion code, kept because the marketing links that
   // carry it are already out there. Anything unknown fails soft into the default pricing.
   const pricing = await getPricing(brand.code, {
-    promotionCode: typeof promotionCode === "string" ? promotionCode : undefined,
+    promotionCode: readSearchParam(promotionCode),
   });
 
   return (
     <div className="grid gap-6 lg:grid-cols-5">
       <section className="space-y-4 lg:col-span-3">
         <SecureCheckoutCard>
-          <PurchaseForm brand={brand} pricing={pricing} />
+          <PurchaseForm
+            brand={brand}
+            pricing={pricing}
+            preselectedPricingCode={readSearchParam(preselectedPricingCode)}
+          />
         </SecureCheckoutCard>
       </section>
 

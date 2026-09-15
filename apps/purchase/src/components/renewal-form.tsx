@@ -23,9 +23,11 @@ import type { PricingTable as Table } from "@/lib/pricing/types";
 export function RenewalForm({
   brand,
   pricing,
+  preselectedPricingCode,
 }: {
   brand: Brand;
   pricing: Table;
+  preselectedPricingCode?: string;
 }) {
   return (
     <form className="space-y-4">
@@ -40,7 +42,10 @@ export function RenewalForm({
 
       <section>
         <StepHeading step={2}>Choose Membership</StepHeading>
-        <PricingTable pricing={pricing} />
+        <PricingTable
+          pricing={pricing}
+          preselectedPricingCode={preselectedPricingCode}
+        />
       </section>
 
       <TermsAgreementField marketingWebsite={brand.marketingWebsite} />

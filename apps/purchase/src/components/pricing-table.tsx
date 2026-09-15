@@ -1,7 +1,3 @@
-"use client";
-
-import { useState } from "react";
-
 import {
   Field,
   FieldContent,
@@ -23,10 +19,9 @@ import { formatPrice } from "@/lib/utils/format-price";
  *
  * Membership marks selection with a hand-rolled `.plan-option.active` class and
  * a jQuery click handler writing to a hidden input. This is a real radio group,
- * so keyboard selection and screen readers work without any of that.
- *
- * The selection is local state, not a form field, because no form submits yet —
- * it becomes one with the flow's logic, carrying `Pricing.code`.
+ * so keyboard selection and screen readers work without any of that, and it is
+ * uncontrolled: the group owns its own selection, this component only picks
+ * what it starts on.
  */
 
 /**
@@ -65,13 +60,46 @@ function billingCaption(pricing: Pricing): string {
     : `for ${period}`;
 }
 
-export function PricingTable({ pricing }: { pricing: Table }) {
-  const [code, setCode] = useState<string | null>(null);
+/**
+ * The pricing to preselect: `preselectedPricingCode` matched case-insensitively against
+ * both groups, so a deep link works whatever the link's case; failing that, the first
+ * single pricing — membership's "please select a plan" state never existed here, because
+ * something is always chosen. `undefined` only when there is no single pricing to fall
+ * back to, which the API never actually sends.
+ *
+ * The `?plan_id=` search param every page reads this from carries a `Pricing.code` ("Y1"),
+ * not a `Pricing.id` — membership named the param after its own column and the links in the
+ * wild spell the code. Matching it against `id` would silently preselect nothing.
+ */
+function defaultCode(
+  pricing: Table,
+  preselectedPricingCode?: string,
+): string | undefined {
+  const wanted = preselectedPricingCode?.toUpperCase();
+  const match = wanted
+    ? [...pricing.single, ...pricing.family].find(
+        (option) => option.code.toUpperCase() === wanted,
+      )
+    : undefined;
+
+  return (match ?? pricing.single[0])?.code;
+}
+
+export function PricingTable({
+  pricing,
+  preselectedPricingCode,
+}: {
+  pricing: Table;
+  preselectedPricingCode?: string;
+}) {
+  const selected = defaultCode(pricing, preselectedPricingCode);
 
   return (
     <RadioGroup
-      value={code}
-      onValueChange={(value) => setCode(value as string)}
+      // Keyed on the resolved selection: an uncontrolled group otherwise keeps whatever it
+      // started on, so a link to a different `plan_id` would go ignored without a remount.
+      key={selected}
+      defaultValue={selected}
       className="gap-6"
       aria-label="Membership plan"
     >
