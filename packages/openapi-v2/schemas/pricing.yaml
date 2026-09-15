@@ -7,6 +7,7 @@ Pricing:
     stores it. A client formats it and never redenominates it.
   required:
     [
+      id,
       code,
       price,
       price_original,
@@ -18,6 +19,14 @@ Pricing:
       installment_count,
     ]
   properties:
+    id:
+      type: integer
+      minimum: 1
+      description: |
+        Identifies this pricing. Membership's `plans.id`, taken verbatim — stable across every
+        table this pricing appears in, whichever campaign priced it. Opaque: never parse it, never
+        order by it.
+      examples: [1]
     code:
       type: string
       maxLength: 15
@@ -142,7 +151,8 @@ PricingTable:
     - promotion_code: null
       renewal_coupon_code: null
       single:
-        - code: "M1"
+        - id: 1
+          code: "M1"
           price: 19.97
           price_original: 19.97
           price_saved: 0
@@ -151,7 +161,8 @@ PricingTable:
           student_limit: 1
           billing_period: { interval: "month", count: 1, extra_count: 0 }
           installment_count: 0
-        - code: "Y1"
+        - id: 2
+          code: "Y1"
           price: 197
           price_original: 239.64
           price_saved: 42.64
@@ -161,7 +172,8 @@ PricingTable:
           billing_period: { interval: "month", count: 12, extra_count: 0 }
           installment_count: 0
       family:
-        - code: "M3"
+        - id: 3
+          code: "M3"
           price: 29.97
           price_original: 29.97
           price_saved: 0
@@ -170,7 +182,8 @@ PricingTable:
           student_limit: 5
           billing_period: { interval: "month", count: 1, extra_count: 0 }
           installment_count: 0
-        - code: "Y3"
+        - id: 4
+          code: "Y3"
           price: 297
           price_original: 359.64
           price_saved: 62.64

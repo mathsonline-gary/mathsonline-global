@@ -54,34 +54,34 @@ test('a brand\'s default pricing is returned grouped single and family', functio
     $brand = Brand::factory()->create(['code' => 'MOL_AU']);
     $campaign = Campaign::create(['brand_id' => $brand->id, 'code' => Campaign::DEFAULT_CODE]);
 
-    $campaign->plans()->attach([
-        Plan::factory()->create([
-            'brand_id' => $brand->id,
-            'code' => 'M1',
-            'price' => 19.97,
-            'price_original' => 19.97,
-            'price_saved' => 0,
-            'currency' => 'aud',
-            'is_recurring' => true,
-            'student_limit' => 1,
-            'billing_period_count' => 1,
-            'billing_period_extra_count' => 0,
-            'installment_count' => 0,
-        ])->id,
-        Plan::factory()->create([
-            'brand_id' => $brand->id,
-            'code' => 'M3',
-            'price' => 29.97,
-            'price_original' => 29.97,
-            'price_saved' => 0,
-            'currency' => 'aud',
-            'is_recurring' => true,
-            'student_limit' => 5,
-            'billing_period_count' => 1,
-            'billing_period_extra_count' => 0,
-            'installment_count' => 0,
-        ])->id,
+    $m1 = Plan::factory()->create([
+        'brand_id' => $brand->id,
+        'code' => 'M1',
+        'price' => 19.97,
+        'price_original' => 19.97,
+        'price_saved' => 0,
+        'currency' => 'aud',
+        'is_recurring' => true,
+        'student_limit' => 1,
+        'billing_period_count' => 1,
+        'billing_period_extra_count' => 0,
+        'installment_count' => 0,
     ]);
+    $m3 = Plan::factory()->create([
+        'brand_id' => $brand->id,
+        'code' => 'M3',
+        'price' => 29.97,
+        'price_original' => 29.97,
+        'price_saved' => 0,
+        'currency' => 'aud',
+        'is_recurring' => true,
+        'student_limit' => 5,
+        'billing_period_count' => 1,
+        'billing_period_extra_count' => 0,
+        'installment_count' => 0,
+    ]);
+
+    $campaign->plans()->attach([$m1->id, $m3->id]);
 
     $this->getJson(pricing($brand))
         ->assertOk()
@@ -90,6 +90,7 @@ test('a brand\'s default pricing is returned grouped single and family', functio
                 'promotion_code' => null,
                 'renewal_coupon_code' => null,
                 'single' => [[
+                    'id' => $m1->id,
                     'code' => 'M1',
                     'price' => 19.97,
                     'price_original' => 19.97,
@@ -101,6 +102,7 @@ test('a brand\'s default pricing is returned grouped single and family', functio
                     'installment_count' => 0,
                 ]],
                 'family' => [[
+                    'id' => $m3->id,
                     'code' => 'M3',
                     'price' => 29.97,
                     'price_original' => 29.97,

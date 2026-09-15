@@ -66,6 +66,10 @@ function billingCaption(pricing: Pricing): string {
  * single pricing — membership's "please select a plan" state never existed here, because
  * something is always chosen. `undefined` only when there is no single pricing to fall
  * back to, which the API never actually sends.
+ *
+ * The `?plan_id=` search param every page reads this from carries a `Pricing.code` ("Y1"),
+ * not a `Pricing.id` — membership named the param after its own column and the links in the
+ * wild spell the code. Matching it against `id` would silently preselect nothing.
  */
 function defaultCode(
   pricing: Table,
