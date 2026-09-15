@@ -1,6 +1,6 @@
 import { AddressFields } from "@/components/address-fields";
 import { PricingTable } from "@/components/pricing-table";
-import { RecaptchaPlaceholder } from "@/components/recaptcha-placeholder";
+import { Recaptcha } from "@/components/recaptcha";
 import { StepHeading } from "@/components/step-heading";
 import { TermsAgreementField } from "@/components/terms-agreement-field";
 import { Button } from "@/components/ui/button";
@@ -85,7 +85,7 @@ export function GiftForm({
 
       <TermsAgreementField marketingWebsite={brand.marketingWebsite} />
 
-      <RecaptchaPlaceholder />
+      <Recaptcha siteKey={brand.googleRecaptchaSiteKey} />
 
       <Button type="submit" size="lg" className="w-full px-8">
         Continue Process

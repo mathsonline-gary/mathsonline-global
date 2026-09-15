@@ -1,5 +1,5 @@
 import { PricingTable } from "@/components/pricing-table";
-import { RecaptchaPlaceholder } from "@/components/recaptcha-placeholder";
+import { Recaptcha } from "@/components/recaptcha";
 import { StepHeading } from "@/components/step-heading";
 import { TermsAgreementField } from "@/components/terms-agreement-field";
 import { Button } from "@/components/ui/button";
@@ -21,8 +21,9 @@ import type { PricingTable as Table } from "@/lib/pricing/types";
  * form here, because the radio group already is the field.
  *
  * Markup only. There is no `onSubmit`, no validation and no submission: the
- * fields are uncontrolled, and the `react-hook-form` + `zod` schema, the
- * reCAPTCHA widget and the POST to membership all land with the flow's logic.
+ * fields are uncontrolled, and the validation schema and the POST to membership
+ * land with the flow's logic. The reCAPTCHA widget is real — it puts its token
+ * in the form, and nothing reads it yet.
  */
 export function PurchaseForm({
   brand,
@@ -94,7 +95,7 @@ export function PurchaseForm({
 
       <TermsAgreementField marketingWebsite={brand.marketingWebsite} />
 
-      <RecaptchaPlaceholder />
+      <Recaptcha siteKey={brand.googleRecaptchaSiteKey} />
 
       <Button type="submit" size="lg" className="w-full px-8">
         Register
