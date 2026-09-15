@@ -19,8 +19,8 @@
     "@workspace/eslint-config": "workspace:*",
     "@workspace/openapi-v2": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "eslint": "^9",
-    "typescript": "^5",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3",
     "vitest": "^4.1.11"
   }
 }

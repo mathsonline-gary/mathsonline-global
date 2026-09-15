@@ -14,8 +14,8 @@
     "mock": "prism mock dist/openapi.yaml --port 4010"
   },
   "devDependencies": {
-    "@redocly/cli": "^2.5.0",
+    "@redocly/cli": "^2.52.1",
     "@stoplight/prism-cli": "^5.16.0",
-    "openapi-typescript": "^7.10.1"
+    "openapi-typescript": "^7.13.0"
   }
 }
