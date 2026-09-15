@@ -3,22 +3,20 @@ import type { components } from "@workspace/api-client";
 /**
  * A brand's identity on the wire — membership's own `brands.code`, upper-case.
  *
- * The description is the authority on which codes exist, so this is its generated type rather than
- * a hand-written union: adding a brand to `/api/v2` is what makes it reachable here.
- *
- * Not what the URL carries. A purchase URL's first segment is a market slug (`au`), mapped onto a
- * code by `brand-code.ts` — see `../../../CONTEXT.md`.
+ * Generated from the description rather than hand-written, so adding a brand to `/api/v2` is what
+ * makes it reachable here. Not what the URL carries: a purchase URL's first segment is a market
+ * slug (`au`), mapped onto a code by `brand-code.ts` — see `../../../CONTEXT.md`.
  */
 export type BrandCode = components["schemas"]["BrandCode"];
 
 /**
  * One brand's public configuration — everything the purchase flows need to render and submit.
  *
- * Every field is on the description's allowlist. No secret is: not the Stripe secret or webhook
+ * Every field is on the description's allowlist; no secret is — not Stripe's secret or webhook
  * secret, the reCAPTCHA secret, the nonce secret, the Keap account key.
  *
  * The wire groups the publishable third-party keys under `stripe` and `google`. That grouping is
- * the payload's, not this application's, so it is flattened at the boundary along with the case.
+ * the payload's, so it is flattened at the boundary along with the case.
  */
 export type Brand = {
   code: BrandCode;

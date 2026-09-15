@@ -15,12 +15,12 @@ class PricingResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * Every field the Pricing schema declares is required, and NOT NULL in the table, so nothing
-     * here is conditional. The one transformation is the currency: membership stores "aud" and
-     * the wire says ISO 4217 alpha-3 upper-case. The column keeps membership's casing so a
-     * re-port stays a straight copy, and this is the single place the wire rule lives.
+     * Every field the Pricing schema declares is required and NOT NULL in the table, so nothing
+     * here is conditional. The one transformation is the currency: the column keeps membership's
+     * "aud" so a re-port stays a straight copy, and this is the single place the wire's ISO 4217
+     * upper-case rule lives.
      *
-     * price_saved crosses verbatim. It is stored rather than derived, so it is not always
+     * price_saved crosses verbatim: it is stored rather than derived, so it is not always
      * price_original - price and must not be recomputed from them.
      *
      * @return array<string, mixed>

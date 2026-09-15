@@ -13,9 +13,8 @@ return new class extends Migration
      * only what the wire calls it. The columns are membership's minus the ones only a checkout
      * needs — 'stripe_id' and 'description' come back when a checkout endpoint asks for them.
      *
-     * Five columns membership leaves nullable are NOT NULL here, because the Pricing schema the
-     * wire declares has no null for any of them. Coalescing a stored null once, on the way in,
-     * beats doing it on every read.
+     * Five columns membership leaves nullable are NOT NULL here, because the Pricing schema has
+     * no null for any of them — coalescing once on the way in beats doing it on every read.
      */
     public function up(): void
     {

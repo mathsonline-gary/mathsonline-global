@@ -13,10 +13,10 @@ import type { PricingTable as Table } from "@/lib/pricing/types";
  * and shared with the homeschool renewal — the two differ only in the banner
  * above the card.
  *
- * Email comes first here and the plan second, the reverse of the new order: a
- * renewing customer is identified by the email membership already holds, and
- * membership validates it server-side before the order is worth building. That
- * check is behaviour, so this field is inert.
+ * Email comes first and the plan second, the reverse of the new order: a
+ * renewing customer is identified by the email membership already holds and
+ * validates server-side before the order is worth building. That check is
+ * behaviour, so the field is inert.
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */

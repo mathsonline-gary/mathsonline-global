@@ -9,11 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      *
-     * Membership's 'renewal_coupons' without 'user_id' and 'external_id'. showPricing looks up a
-     * coupon by brand and code and asks whether it is redeemable; it never asks who owns it.
-     * The owner is enforced at order creation, which lives in membership, and the external id
-     * exists only for the read-through sync against the MathsOnline core system, which is not
-     * migrated. Both return when authentication and that sync do.
+     * Membership's 'renewal_coupons' without 'user_id' and 'external_id'. showPricing looks a
+     * coupon up by brand and code and asks whether it is redeemable, never who owns it: the owner
+     * is enforced at order creation, and the external id exists only for the read-through sync
+     * against the MathsOnline core system. Both return when authentication and that sync do.
      */
     public function up(): void
     {

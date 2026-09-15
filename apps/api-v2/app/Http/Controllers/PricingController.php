@@ -18,10 +18,9 @@ class PricingController extends Controller
     /**
      * Retrieve a brand's pricing.
      *
-     * No FormRequest. Every code parameter fails soft by description — unknown, expired, spent or
-     * another brand's are all the same answer — so a request class that rejected anything would
-     * contradict the description, and one that only coerced would earn nothing over the typed
-     * accessors used here.
+     * No FormRequest: every code parameter fails soft by description, so a request class that
+     * rejected anything would contradict it and one that only coerced would earn nothing over the
+     * typed accessors used here.
      */
     public function show(Request $request, Brand $brand): PricingTableResource
     {
@@ -29,9 +28,9 @@ class PricingController extends Controller
             ? PlanType::Homeschool
             : PlanType::Standard;
 
-        // A testing token overrides everything, and only for a brand with testing plans enabled.
-        // Testing plans are brand-scoped rather than campaign-scoped, so no promotion or coupon
-        // applies to them, and membership's testing branch ignores homeschool too.
+        // A testing token overrides everything. Testing plans are brand-scoped, not
+        // campaign-scoped, so no promotion or coupon applies — and membership ignores homeschool
+        // here too.
         if ($brand->testing_plans_enabled && TestingToken::verify($this->queryString($request, 'testing_token'))) {
             $testing = $this->group($brand->plans()->where('type', PlanType::Testing)->get());
 
@@ -53,8 +52,7 @@ class PricingController extends Controller
         $coupon = RenewalCoupon::resolve($brand, $this->queryString($request, 'renewal_coupon_code'));
 
         // Renewal coupon, then promotion, then the brand's own campaign. Each rung carries the
-        // codes it would echo: only the campaign that actually prices the table is reported, so
-        // the loser of a coupon-beats-promotion race comes back null alongside it.
+        // codes it would echo, so the loser of a coupon-beats-promotion race comes back null.
         $ladder = array_values(array_filter([
             $coupon === null ? null : [$coupon->campaign, null, $coupon->code],
             $promotion === null ? null : [$promotion->campaign, $promotion->code, null],
@@ -68,9 +66,8 @@ class PricingController extends Controller
 
             $groups = $this->group($campaign->plans()->where('type', $type)->get());
 
-            // A campaign that cannot fill both groups did not price the table, so it falls through
-            // like any other input that does not apply — the description says both groups are
-            // always present and never empty, whatever the query.
+            // A campaign that cannot fill both groups falls through like any other input that does
+            // not apply: the description says both groups are always present and never empty.
             if ($groups !== null) {
                 return new PricingTableResource([
                     'promotion_code' => $promotionCode,
@@ -80,8 +77,7 @@ class PricingController extends Controller
             }
         }
 
-        // The brand's own default campaign cannot fill the table. That is a data error nothing a
-        // client sends can fix, and there is no response for it the description declares.
+        // A data error nothing a client sends can fix, and no response the description declares.
         abort(500, "Brand {$brand->code} has no complete default pricing.");
     }
 
@@ -91,9 +87,9 @@ class PricingController extends Controller
      * Single is one student and family is more than one — student_limit is the whole rule, never
      * the plan's code.
      *
-     * Array order is render order: period length first, then whether the price is paid in
-     * installments, which is the only thing separating an annual plan from the same annual plan
-     * paid in four. Sorting is stable, so a remaining tie keeps insertion order.
+     * Array order is render order: period length, then installment count, which is the only thing
+     * separating an annual plan from the same plan paid in four. The sort is stable, so a
+     * remaining tie keeps insertion order.
      *
      * @param  Collection<int, Plan>  $plans
      * @return array{single: list<Plan>, family: list<Plan>}|null

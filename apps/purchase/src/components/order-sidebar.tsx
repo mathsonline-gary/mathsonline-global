@@ -22,9 +22,8 @@ import type { Brand } from "@/lib/brands/types";
  * homeschool testimonial; `awe` swaps the quote and adds the AWE Discounts
  * logo. Everything below the quote is the same in all three.
  *
- * The cards are file-private, as they are in membership: the sidebar is the
- * only thing that has ever wanted a testimonial or a guarantee banner. Lift one
- * out the day a second caller appears, not before.
+ * The cards are file-private, as in membership. Lift one out the day a second
+ * caller appears, not before.
  */
 export type OrderSidebarVariant = "default" | "homeschool" | "awe";
 
@@ -39,21 +38,14 @@ type Testimonial = {
 };
 
 /**
- * The customer quotes, hard-coded rather than fetched. They are marketing copy,
- * not brand configuration — not on the v2 brand payload's allowlist, and
- * changing on a copywriter's timescale — so they ship with the component.
+ * The customer quotes, hard-coded rather than fetched: marketing copy, not
+ * brand configuration, so they are not on the v2 brand payload's allowlist.
+ * Keyed on the brand code, where membership keys them on `brands.id`.
  *
- * Membership keys them on `brands.id`; here they are keyed on the brand code,
- * which is the brand's identity on the wire. Each ported quote is matched to
- * its brand by the reviewer's own stated location.
- *
- * The quotes name the product literally, unlike the rest of the copy. They are
- * verbatim customer words — interpolating a brand name into someone's quote
- * would misattribute it.
- *
- * Coverage is ragged in membership too — only some brands have a quote for
- * some variants — so a missing one renders nothing. Don't invent copy to fill
- * a gap.
+ * The quotes name the product literally, unlike the rest of the copy —
+ * interpolating a brand name into someone's verbatim words would misattribute
+ * them. Coverage is ragged in membership too, so a missing quote renders
+ * nothing. Don't invent copy to fill a gap.
  */
 const TESTIMONIALS: Record<OrderSidebarVariant, Record<string, Testimonial>> = {
   default: {
@@ -163,14 +155,12 @@ function TestimonialCard({
 /**
  * The "Satisfaction Guaranteed" banner and the money-back modal behind it.
  *
- * Membership hand-rolls the modal out of a hidden div, two jQuery `animate`
- * calls and a click handler on its own backdrop; this is the shadcn `Dialog`,
- * which brings the focus trap, escape-to-close and `aria-modal` wiring that
+ * The shadcn `Dialog` in place of membership's hidden div and jQuery
+ * `animate`, for the focus trap, escape-to-close and `aria-modal` wiring that
  * version never had.
  *
- * Membership interpolates the brand name into this copy from `$brand->name`,
- * and so does this — the name varies between brands. The other thing that
- * varies is whether there is a phone number to call.
+ * The brand name is interpolated into the copy, as in membership — it varies
+ * between brands, as does whether there is a phone number to call.
  */
 function GuaranteeDialog({
   name,

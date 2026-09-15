@@ -11,8 +11,8 @@ import { readSearchParam } from "@/lib/utils/read-search-param";
  * homeschool flows nest under (`/renew` sits beneath it).
  *
  * Two membership paths collapse here, `/purchase/homeschool50` and
- * `/purchase/homeschool`, so the 301 map has two entries pointing at it.
- * Neither survives as an alias: one canonical path per flow.
+ * `/purchase/homeschool` — two 301 entries, no aliases: one canonical path per
+ * flow.
  *
  * The form is the new order's; the half-price artwork and the homeschool
  * testimonial ride in the sidebar. UI only — see `PurchaseForm`.

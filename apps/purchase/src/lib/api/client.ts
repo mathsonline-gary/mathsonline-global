@@ -24,13 +24,11 @@ export function api() {
  *
  * Needed because `openapi-fetch` builds a `Request` and calls `fetch(request, ext)`, where `ext`
  * comes from the *client's* `requestInitExt`. A `next` key on a per-call init lands on the
- * `Request` instead, where Next's patched `fetch` never looks — so it would be silently ignored
- * and every read would be uncached. Overriding `fetch` for the call is what gets per-brand tags
- * through.
+ * `Request` instead, where Next's patched `fetch` never looks, so it would be silently ignored and
+ * every read uncached. Overriding `fetch` for the call is what gets per-brand tags through.
  *
- * Deliberately here and not in `@workspace/api-client`: that package holds no app-specific policy,
- * and Next's fetch semantics are exactly that. It can move once a second app needs it and the
- * right shape is known.
+ * Here and not in `@workspace/api-client`, which holds no app-specific policy. Move it once a
+ * second app needs it.
  */
 export function nextCache(config: NextFetchRequestConfig) {
   return {

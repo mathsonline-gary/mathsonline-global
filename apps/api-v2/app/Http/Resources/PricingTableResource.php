@@ -9,9 +9,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 /**
  * Every pricing a brand offers, grouped as the customer sees it.
  *
- * Wraps the array PricingController assembled. The grouping and the render order are decided
- * there, because the controller needs the grouped result to choose which campaign priced the
- * table; this only shapes it for the wire.
+ * Wraps the array PricingController assembled. Grouping and render order are decided there,
+ * because the controller needs the grouped result to choose which campaign priced the table.
  *
  * @property array{promotion_code: ?string, renewal_coupon_code: ?string, single: list<Plan>, family: list<Plan>} $resource
  */
