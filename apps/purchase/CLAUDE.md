@@ -9,7 +9,10 @@ repository-wide rules are in `../../.claude/CLAUDE.md`; the brand vocabulary is 
 ## State
 
 Every flow page renders its real UI, ported from membership's blades, and **no flow has any logic**.
-No form has an `onSubmit`, nothing validates, nothing calls the API. Where a page needs data there is
+No form has an `onSubmit`, nothing validates, nothing calls the API. The one exception is
+`Recaptcha`, which renders the brand's real v2 checkbox and leaves its token in the form for a
+submit handler that does not exist yet. Where
+a page needs data there is
 no read for — plan prices, the country list — a clearly-named `PLACEHOLDER_*` constant stands in,
 marked at its definition. Where membership branches on the order (the checkout's paid / cancelled /
 not-found panels, the success page's per-type wording), only the main case is rendered.
