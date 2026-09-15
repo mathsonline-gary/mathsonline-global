@@ -11,15 +11,6 @@ that implement and consume it, and one task graph covering all of them. Nothing 
 
 ## Layout
 
-```text
-packages/openapi-v2/   # the OpenAPI 3.1 description of /api/v2 — @workspace/openapi-v2
-packages/api-client/   # typed HTTP client over it — @workspace/api-client
-packages/typescript-config/, packages/eslint-config/
-apps/api-v2/           # Laravel back end serving /api/v2
-apps/purchase/         # Next.js front end for the customer purchase flows
-apps/www/, apps/cms/, apps/admin/, apps/student/, apps/teacher/, apps/parent/   # placeholders
-```
-
 Each application's own conventions live in its `CLAUDE.md` or `README.md`. Read that file before
 working inside one; this file holds only what is true across the whole repository.
 
@@ -60,13 +51,11 @@ Run everything through the task graph from the repository root. There is no CI y
 pre-commit hook are the only things that run the gate.
 
 ```bash
-pnpm install                    # bootstrap; pnpm workspaces, Node >= 22
-pnpm turbo run lint check-types test build
-pnpm dev                        # every app's dev server
-pnpm mock                       # Prism mock server over the description, on :4010
-pnpm test                       # vitest and pest, once, everywhere configured
-pnpm format                     # prettier
+pnpm turbo run lint check-types test build   # the gate
+pnpm mock                                    # Prism mock server over the description, on :4010
 ```
+
+`pnpm install` bootstraps (pnpm workspaces, Node >= 22); the rest are `package.json` scripts.
 
 `mock` is deliberately not part of `dev`: an app pointed at a real back end should not also spin up
 a mock. Point an app at it with `API_URL=http://127.0.0.1:4010` — no `/api/v2` prefix, because
@@ -92,9 +81,7 @@ Vitest in `@workspace/api-client` and `apps/purchase`; Pest in `apps/api-v2`.
 
 ## Commits are gated by a pre-commit hook
 
-`husky` runs `lint-staged` on every commit, configured in `.lintstagedrc.mjs`. It does two things,
-in order: `prettier --write` over the staged files, then `pnpm turbo run lint check-types test`
-over the whole graph.
+`husky` runs `lint-staged` on every commit, configured in `.lintstagedrc.mjs`.
 
 The second half runs whole-graph, not scoped to staged paths: `redocly lint` takes the
 description's entrypoint, and type errors and test breakage are cross-file, so scoping to staged
