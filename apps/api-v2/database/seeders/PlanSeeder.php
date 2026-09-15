@@ -20,9 +20,8 @@ class PlanSeeder extends Seeder
     /**
      * The campaigns of the three seeded brands: membership's id => [brand, code].
      *
-     * Every campaign membership gives brands 1, 2 and 4 except brand 4's 'ORIGINAL', which no
-     * other seeded brand has. The ids are membership's, so a campaign keeps one identity across
-     * both repositories.
+     * Every campaign membership gives brands 1, 2 and 4 except brand 4's 'ORIGINAL'. The ids are
+     * membership's, so a campaign keeps one identity across both repositories.
      *
      * @var array<int, array{int, string}>
      */
@@ -74,15 +73,14 @@ class PlanSeeder extends Seeder
      * Seed the campaigns, plans and promotions behind showPricing.
      *
      * Every row is membership's, id included, so the two databases agree on what a campaign or a
-     * plan is. Membership's 'price_saved' is NULL wherever nothing is saved, and 0 here, because
-     * the Pricing schema on the wire has no null; that is the only value that differs.
+     * plan is. The only value that differs: 'price_saved' is 0 where membership has NULL, because
+     * the Pricing schema on the wire has no null.
      *
-     * Stripe price ids are not ported. Nothing here takes a payment, and a checkout endpoint can
-     * bring its own column when it needs one.
+     * Stripe price ids are not ported — nothing here takes a payment.
      *
-     * The XMAS promotions are ours: membership seeds no promotions, and showPricing needs a code
-     * to resolve. No renewal coupons either — a coupon is issued to one customer for one renewal,
-     * so there is no reference data for it. Tests use the factory.
+     * The XMAS promotions are ours: membership seeds none, and showPricing needs a code to
+     * resolve. No renewal coupons either, since one is issued to one customer for one renewal.
+     * Tests use the factory.
      */
     public function run(): void
     {
@@ -127,9 +125,9 @@ class PlanSeeder extends Seeder
     /**
      * Membership's plans for the three seeded brands, in its ids.
      *
-     * A code is not unique within a brand: membership prices the same plan differently per
-     * campaign and gives every variant the same code, so brand 1 has four rows coded 'M1'. The id
-     * is what identifies a plan, and the campaign it hangs off is what makes it reachable.
+     * A code is not unique within a brand — membership prices the same plan differently per
+     * campaign under one code, so brand 1 has four rows coded 'M1'. The id identifies a plan; the
+     * campaign it hangs off makes it reachable.
      *
      * @return array<int, array{int, string, float, float, float, bool, int, int, int, int, PlanType}>
      */

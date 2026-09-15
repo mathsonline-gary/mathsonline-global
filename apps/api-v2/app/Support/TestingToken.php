@@ -25,9 +25,8 @@ final class TestingToken
     /**
      * Verify a testing token.
      *
-     * Nothing a caller sends is a reason to fail: a token that does not decrypt, does not decode,
-     * carries no expiry or has passed it is simply not a token, which the description already
-     * permits — a token that does not apply is ignored, never rejected.
+     * Nothing a caller sends is a reason to fail. A token that does not decrypt, does not decode,
+     * carries no expiry or has passed it is simply not a token — ignored, never rejected.
      */
     public static function verify(?string $token): bool
     {

@@ -13,21 +13,18 @@ import { formatPrice } from "@/lib/utils/format-price";
  * The plan grid every paid flow chooses from, ported from membership's
  * `orders/components/pricing_table.blade.php` and `pricing_card.blade.php`.
  *
- * Shared by all three forms because the grid is the same in each — what differs
- * between the flows is which pricings fill it, and that is the caller's query
- * to `getPricing`, not a variant here.
+ * Shared by all three forms: what differs between the flows is which pricings
+ * fill the grid, and that is the caller's query to `getPricing`, not a variant
+ * here.
  *
- * Membership marks selection with a hand-rolled `.plan-option.active` class and
- * a jQuery click handler writing to a hidden input. This is a real radio group,
- * so keyboard selection and screen readers work without any of that, and it is
- * uncontrolled: the group owns its own selection, this component only picks
- * what it starts on.
+ * A real radio group where membership hand-rolls `.plan-option.active` and a
+ * jQuery click handler, so keyboard selection and screen readers work. It is
+ * uncontrolled — this component only picks what the group starts on.
  */
 
 /**
  * Both groups render, always, in this order. The API guarantees both are
- * present and non-empty whatever was asked for, so there is nothing to branch
- * on — and it decides the order within each, which is why nothing is sorted
+ * present and non-empty, and decides the order within each — nothing is sorted
  * here.
  */
 const GROUPS = [
@@ -61,15 +58,13 @@ function billingCaption(pricing: Pricing): string {
 }
 
 /**
- * The pricing to preselect: `preselectedPricingCode` matched case-insensitively against
- * both groups, so a deep link works whatever the link's case; failing that, the first
- * single pricing — membership's "please select a plan" state never existed here, because
- * something is always chosen. `undefined` only when there is no single pricing to fall
- * back to, which the API never actually sends.
+ * The pricing to preselect: `preselectedPricingCode` matched case-insensitively against both
+ * groups, so a deep link works whatever its case; failing that, the first single pricing.
+ * Something is always chosen, so membership's "please select a plan" state never existed here.
  *
- * The `?plan_id=` search param every page reads this from carries a `Pricing.code` ("Y1"),
- * not a `Pricing.id` — membership named the param after its own column and the links in the
- * wild spell the code. Matching it against `id` would silently preselect nothing.
+ * The `?plan_id=` search param this comes from carries a `Pricing.code` ("Y1"), not a
+ * `Pricing.id` — membership named the param after its own column. Matching it against `id` would
+ * silently preselect nothing.
  */
 function defaultCode(
   pricing: Table,

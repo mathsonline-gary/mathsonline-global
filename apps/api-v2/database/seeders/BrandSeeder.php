@@ -28,18 +28,15 @@ class BrandSeeder extends Seeder
     /**
      * Seed the 'brands' table with the project's reference data.
      *
-     * Membership's nine brands less its id 6, which repeats id 1's code MOL_AU: 'brands.code' is
+     * Membership's nine brands less its id 6, which repeats id 1's code MOL_AU — 'brands.code' is
      * unique here because route binding needs it to be. Only three of the remaining codes are in
-     * BrandCode, and only those three are part of the described API — the other five are seeded so
-     * a brand outside the enum exists to test against, not because /api/v2 serves them.
+     * BrandCode; the other five are seeded so a brand outside the enum exists to test against.
      *
-     * Ported from membership's BrandSeeder and BrandSettingSeeder; membership splits the two
-     * across a 1:1 pair of tables, this schema does not. Columns membership leaves null for every
-     * brand (analytics, ads, pixels, hotjar) are omitted rather than spelled out: the column
-     * default is already null.
+     * Ported from membership's BrandSeeder and BrandSettingSeeder, which split across a 1:1 pair
+     * of tables this schema does not have. Columns membership leaves null for every brand
+     * (analytics, ads, pixels, hotjar) are omitted — the column default is already null.
      *
-     * The ids are membership's, so a brand keeps one identity across both repositories. They are
-     * force-filled because 'id' is deliberately not fillable.
+     * The ids are membership's, force-filled because 'id' is deliberately not fillable.
      */
     public function run(): void
     {
@@ -78,9 +75,9 @@ class BrandSeeder extends Seeder
      * 'marketing_website' is the purchase app's market slug. The five brands outside BrandCode
      * have no front end, so theirs is nominal — membership points each at a local port instead.
      *
-     * The last element of each row says whether membership configures the brand for payments; it
-     * is popped off before the row is written, so it is positional rather than keyed to keep it
-     * out of the column list.
+     * The last element of each row says whether membership configures the brand for payments. It
+     * is positional rather than keyed to keep it out of the column list, and popped off before
+     * the row is written.
      *
      * @return list<array<string, mixed>>
      */

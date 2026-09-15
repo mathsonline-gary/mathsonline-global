@@ -12,18 +12,17 @@ import type { PricingTable as Table } from "@/lib/pricing/types";
  * The new-order form, ported from membership's `orders/create/new.blade.php`:
  * two numbered steps — choose a membership, then enter your details.
  *
- * Shared by the three flows membership serves from that same blade: the plain
- * new order, the homeschool half-price order and the AWE order. What differs
- * between them is the sidebar and the plans, never the form.
+ * Shared by the three flows membership serves from that same blade — plain new
+ * order, homeschool half-price and AWE. What differs is the sidebar and the
+ * plans, never the form.
  *
- * Membership leaves its plan grid outside the `<form>` and posts the choice
- * through a hidden input a click handler writes to. Both steps sit inside the
- * form here, because the radio group already is the field.
+ * Both steps sit inside the `<form>`, where membership leaves its plan grid
+ * outside and posts the choice through a hidden input, because the radio group
+ * already is the field.
  *
- * Markup only. There is no `onSubmit`, no validation and no submission: the
- * fields are uncontrolled, and the validation schema and the POST to membership
- * land with the flow's logic. The reCAPTCHA widget is real — it puts its token
- * in the form, and nothing reads it yet.
+ * Markup only: no `onSubmit`, no validation, no submission — those land with
+ * the flow's logic. The reCAPTCHA widget is real and puts its token in the
+ * form; nothing reads it yet.
  */
 export function PurchaseForm({
   brand,

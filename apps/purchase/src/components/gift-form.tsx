@@ -18,8 +18,8 @@ import type { PricingTable as Table } from "@/lib/pricing/types";
  *
  * Its submit button says "Continue Process" because it does not end the
  * purchase: gift pays through PayPal rather than Stripe, and membership hands
- * off by POSTing a hidden form to PayPal's `webscr` endpoint.
- * None of that hand-off is here.
+ * off by POSTing a hidden form to PayPal's `webscr` endpoint. That hand-off is
+ * not here.
  *
  * Markup only — see `PurchaseForm` for what the forms deliberately don't do.
  */

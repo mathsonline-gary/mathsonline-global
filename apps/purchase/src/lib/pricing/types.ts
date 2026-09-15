@@ -8,7 +8,7 @@ import type { components } from "@workspace/api-client";
  */
 export type Pricing = {
   /**
-   * What a checkout sends back to say which option the customer chose. Opaque: never parse it.
+   * What a checkout sends back to say which option the customer chose. Opaque: never parse it —
    * `M3` is a family pricing for five students, so neither the letter nor the digit is a fact.
    */
   code: string;
@@ -17,8 +17,8 @@ export type Pricing = {
   /** The undiscounted price. Shown struck through only when it is greater than `price`. */
   priceOriginal: number;
   /**
-   * What the customer saves, `0` when nothing is. The API stores this rather than deriving it, so
-   * it is not always `priceOriginal - price` and must not be recomputed from them.
+   * What the customer saves, `0` when nothing is. Stored by the API, so it is not always
+   * `priceOriginal - price` and must never be recomputed from them.
    */
   priceSaved: number;
   /** ISO 4217 alpha-3, upper-case. Picks the symbol, nothing more. */
@@ -40,15 +40,13 @@ export type Pricing = {
 /**
  * Every pricing a brand offers, grouped as the customer sees it.
  *
- * Both groups are always present and never empty, whatever the query — so a caller renders the
- * same grid every time and never branches on what it asked for.
+ * Both groups are always present and never empty, whatever the query, so a caller renders the same
+ * grid every time. **Array order is render order**, decided by the server: it is not derivable
+ * from any one field, and two pricings can differ only by `installmentCount`.
  *
- * **Array order is render order**, decided by the server: the ordering that matters is not
- * derivable from any one field, and two pricings can differ only by `installmentCount`.
- *
- * The two codes echo what actually took effect. A code that is unknown, expired, already used or
- * another brand's comes back `null` alongside the brand's default pricing — which is how a caller
- * tells the customer their code did not apply, rather than by reading an error.
+ * The two codes echo what took effect. Unknown, expired, spent or another brand's comes back
+ * `null` alongside the brand's default pricing — that, not an error, is how a caller tells the
+ * customer their code did not apply.
  */
 export type PricingTable = {
   promotionCode: string | null;

@@ -24,8 +24,8 @@ export const metadata: Metadata = {
 
 /**
  * The brand-blue canvas every purchase page sits on, ported from membership's
- * `layouts/app.blade.php`. It is a literal rather than a design token: it is this one application's
- * chrome, not a colour the design system offers.
+ * `layouts/app.blade.php`. A literal rather than a design token: it is this application's chrome,
+ * not a colour the design system offers.
  *
  * No theme provider and no dark mode. `globals.css` carries a `.dark` token set, but nothing adds
  * that class, and a hard-coded blue canvas would not survive it anyway.

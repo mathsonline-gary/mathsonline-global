@@ -8,26 +8,22 @@ import type { Pricing, PricingTable } from "./types";
 /**
  * The API boundary for pricing — `GET /brands/{brandCode}/pricing`.
  *
- * Server-side only, like the brand read: prices decide what renders, so they have to be resolved
- * before the page is sent rather than filled in afterwards.
- *
- * No React `cache()` here, unlike `getBrand`. A brand read is keyed by one string and happens in a
- * layout and the page beneath it; a pricing read takes a query object, which `cache()` would key by
- * reference and so never dedupe, and one page makes one call. Next's fetch cache still spans
- * requests and users, tagged per brand.
+ * Server-side only: prices decide what renders. No React `cache()` unlike `getBrand` — a query
+ * object would be keyed by reference and so never dedupe, and one page makes one call. Next's
+ * fetch cache still spans requests and users, tagged per brand.
  */
 
 /** How long one brand's pricing may be stale. */
 const PRICING_TTL_SECONDS = 300;
 
 /**
- * Which pricings fill the table — never whether there is one. The API resolves these first-match:
- * the renewal coupon's campaign, then the promotion's, then the brand's default. `homeschool` then
- * picks the homeschool pricings out of whichever campaign won.
+ * Which pricings fill the table — never whether there is one. Resolved first-match: the renewal
+ * coupon's campaign, then the promotion's, then the brand's default; `homeschool` picks the
+ * homeschool pricings out of whichever won.
  *
- * Every code fails soft. Unknown, expired, spent or another brand's are all the same answer — the
- * brand's default pricing, with the corresponding field on the result `null`. So read the result's
- * `promotionCode` / `renewalCouponCode` to find out what applied; none of this throws.
+ * Every code fails soft. Unknown, expired, spent and another brand's all give the brand's default
+ * with the matching result field `null` — read `promotionCode` / `renewalCouponCode` to find out
+ * what applied. None of this throws.
  */
 export type PricingQuery = {
   promotionCode?: string;
@@ -73,9 +69,8 @@ function toPricingTable(
 /**
  * One brand's pricing table.
  *
- * Throws rather than returning null, which is the opposite of `getBrand` and deliberate: the only
- * 404 here is a brand that does not exist, and every caller has already resolved one through
- * `requireBrand`. A page that cannot price cannot render, so it 500s.
+ * Throws rather than returning null, unlike `getBrand`: the only 404 here is a brand that does not
+ * exist, and every caller has already resolved one through `requireBrand`.
  */
 export async function getPricing(
   code: BrandCode,

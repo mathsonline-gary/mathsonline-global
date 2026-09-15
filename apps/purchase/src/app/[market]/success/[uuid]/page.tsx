@@ -8,11 +8,9 @@ import { requireBrand } from "@/lib/brands/require-brand";
  * the first one built. It deliberately does not gate on payment status — the Stripe
  * webhook lags the redirect — matching membership's current behaviour.
  *
- * Membership switches its title, body and footnote on the order type — trial,
- * renewal, gift, or a plain purchase. That needs the order, and nothing reads
- * the order yet, so the uuid goes unread and this is the plain-purchase
- * wording. Membership also names the customer's email address here; that is
- * the order's too, so the sentence drops it.
+ * Membership switches its title, body and footnote on the order type, and names
+ * the customer's email. All of that needs the order, which nothing reads yet, so
+ * the uuid goes unread and this is the plain-purchase wording.
  *
  * UI only.
  */

@@ -1,11 +1,9 @@
 /**
- * The 404 for the whole app, including an unknown market slug. There is no GeoIP
- * routing and no redirect-guessing, so an unrecognised first path segment lands
- * here.
+ * The 404 for the whole app, including an unknown market slug — there is no GeoIP
+ * routing and no redirect-guessing.
  *
- * No slug resolved means no brand known, so this page carries no brand name,
- * no brand chrome and no links into a flow. The copy is this application's own:
- * the API returns facts, and what the customer reads is decided here.
+ * No slug resolved means no brand known, so this page carries no brand name, no
+ * brand chrome and no links into a flow.
  */
 export default function NotFound() {
   return (

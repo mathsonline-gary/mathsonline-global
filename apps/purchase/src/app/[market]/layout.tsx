@@ -4,21 +4,18 @@ import { requireBrand } from "@/lib/brands/require-brand";
 
 /**
  * Brand resolution for every purchase page: one deployment, one shared host, the market slug as the
- * first path segment, resolved by this plain dynamic segment.
+ * first path segment.
  *
  * An unresolvable slug is a 404, not a redirect and not a GeoIP guess. The `notFound()` thrown here
- * escapes this segment's own boundary, so it renders the root `not-found.tsx` — correctly, since
- * with no brand there is no brand chrome to render a 404 inside.
+ * escapes this segment's boundary and renders the root `not-found.tsx` — with no brand there is no
+ * chrome to render a 404 inside.
  *
- * It also owns the chrome every flow shares, ported from membership's `layouts/app.blade.php` and
+ * It also owns the chrome every flow shares, from membership's `layouts/app.blade.php` and
  * `orders/layouts/header.blade.php`: the brand-blue canvas, the centred logo, and the `max-w-6xl`
- * column the flows sit in — wide enough for the form-plus-sidebar split every membership order page
- * uses. The per-flow `<h1>` stays with the page, as membership's blades each render their own
- * ("Subscription Form", "Renew Your Membership", …).
+ * column wide enough for the form-plus-sidebar split. The per-flow `<h1>` stays with the page.
  *
- * Membership keys the logo asset on `brands.id` (`resources/images/2/…`); here it is one asset for
- * every brand, and only its `alt` follows the brand's name. The v2 payload has no id to key on, and
- * the mark is the same whichever brand is served.
+ * One logo asset for every brand, where membership keys it on `brands.id` — the v2 payload has no
+ * id to key on, and the mark is the same whichever brand is served. Only its `alt` varies.
  */
 export default async function BrandLayout({
   children,

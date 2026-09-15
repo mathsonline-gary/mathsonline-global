@@ -10,9 +10,8 @@ import type { Brand, BrandCode } from "./types";
  * The API boundary for brand configuration — `GET /brands/{brandCode}`.
  *
  * Server-side only: the browser never calls the membership API. Brand resolution gates a 404, so it
- * has to happen before anything renders, and a client-side cache could not do that — content would
- * flash and then soft-404. Server `cache()` plus `revalidateTag` also beats a client cache on its
- * own terms: one payload for every user, invalidatable from one place.
+ * has to happen before anything renders — a client-side cache would flash content and then
+ * soft-404.
  */
 
 /** How long one brand's configuration may be stale. */
@@ -42,14 +41,12 @@ function toBrand(payload: components["schemas"]["Brand"]): Brand {
 /**
  * One brand's configuration, or null when the API does not serve that code.
  *
- * Every `[market]` page resolves through this, so it is cached twice over, doing different jobs.
- * React's `cache()` dedupes within one request, so a layout and the page beneath it cost one fetch.
- * The `next` tag spans requests and users, and is what `revalidateTag` reaches — tagged per brand
- * so that invalidating one does not cost the others their cache.
+ * Cached twice over, doing different jobs. React's `cache()` dedupes within one request, so a
+ * layout and the page beneath it cost one fetch. The `next` tag spans requests and users and is
+ * what `revalidateTag` reaches, tagged per brand so invalidating one spares the others.
  *
- * A 404 is the answer "no such brand", so it returns null and lets `requireBrand` turn that into
- * the 404 page. Anything else throws: the API being unreachable means the purchase page 500s, which
- * is already true of anything priced.
+ * A 404 means "no such brand", so it returns null for `requireBrand` to turn into the 404 page.
+ * Anything else throws.
  */
 export const getBrand = cache(
   async (code: BrandCode): Promise<Brand | null> => {

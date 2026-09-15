@@ -12,11 +12,10 @@ import {
  * The postal address block shared by the coupon-redemption and gift forms —
  * the two flows that post something physical or need a billing address.
  *
- * Membership ships every line but the first with `display: none` and reveals
- * them from its Google Places autocomplete callback. They are all visible here:
- * hiding them is behaviour, and there is no autocomplete to reveal them yet.
+ * Every line is visible, where membership hides all but the first until its
+ * Google Places callback reveals them — there is no autocomplete here yet.
  *
- * The country list is a placeholder. Membership renders every ISO country from
+ * The country list is a placeholder: membership renders every ISO country from
  * its own table, which the description offers no read for. Base UI resolves the
  * trigger's label from `items`, so the options are data rather than inline
  * children — without it the trigger would show the raw country code.
